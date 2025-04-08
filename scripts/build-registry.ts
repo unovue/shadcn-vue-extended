@@ -12,12 +12,13 @@ const registry = [
 async function buildRegistryJsonFile() {
   // 1. Fix the path for registry items.
   const fixedRegistry = {
-    ...registry,
+    name: 'shadcn-vue-extended',
+    homepage: 'https://extended.shadcn-vue.com',
     items: registry.map((item) => {
       const files = item.files?.map((file) => {
         return {
           ...file,
-          path: `registry/new-york-v4/${file.path}`,
+          path: `registry/${file.path}`,
         }
       })
 
@@ -39,7 +40,7 @@ async function buildRegistryJsonFile() {
 async function buildRegistry() {
   return new Promise((resolve, reject) => {
     const process = exec(
-      `pnpm dlx shadcn build registry.json --output ../www/public/r/styles/new-york-v4`,
+      `pnpm dlx shadcn-vue@latest build registry.json --output public/r`,
     )
 
     process.on('exit', (code) => {
