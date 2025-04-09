@@ -5,20 +5,28 @@ const nuxtApp = useNuxtApp()
 const { data } = useActivePage()
 const { activeHeadings, updateHeadings } = useScrollspy()
 
+function flatten(links: TocLink[]): TocLink[] {
+  return links.flatMap(link => [link, ...(link.children ? flatten(link.children as TocLink[]) : [])])
+}
+
 const toc = computed(() => {
-  const result: TocLink[] = [];
-
-  (function flatten(links?: TocLink[]) {
-    if (!links)
-      return
-    links.forEach((link) => {
-      result.push(link)
-      if (link.children?.length)
-        flatten(link.children)
-    })
-  })(data.value?.body.toc?.links)
-
+  const result = flatten(data.value?.body.toc?.links ?? [])
   return result
+})
+
+const indicatorStyle = computed(() => {
+  if (!activeHeadings.value?.length) {
+    return
+  }
+
+  const activeIndex = toc.value.findIndex(link => activeHeadings.value.includes(link.id))
+  const linkHeight = 28
+  const offset = 4
+
+  return {
+    '--indicator-size': `${(linkHeight * activeHeadings.value.length)}px`,
+    '--indicator-position': activeIndex >= 0 ? `${(activeIndex * linkHeight) - offset}px` : '0px',
+  }
 })
 
 nuxtApp.hooks.hookOnce('page:finish', () => {
@@ -34,12 +42,16 @@ nuxtApp.hooks.hookOnce('page:finish', () => {
     <span class="text-[13px] flex items-center gap-2">On this page</span>
 
     <div class="relative">
-      <ul class="mt-4 space-y-2">
+      <ul class="mt-4 space-y-2 border-l relative">
+        <div
+          class="w-px h-[var(--indicator-size)] top-[var(--indicator-position)] bg-foreground absolute transition-all"
+          :style="indicatorStyle"
+        />
         <li v-for="item in toc" :key="item.id" class="h-fit flex">
           <a
             :data-indent="item.depth === 3 ? '' : undefined"
             :data-active="activeHeadings.includes(item.id) ? '' : undefined"
-            class="text-[13px] data-[indent]:ml-10 data-[active]:text-primary hover:text-primary transition-colors ml-5 h-5 inline-block truncate text-muted-foreground before:content-[''] before:absolute before:left-0 before:w-[1px] before:-translate-y-1 before:h-7 before:bg-primary before:opacity-5 before:transition data-[active]:before:opacity-100"
+            class="text-[13px] data-[indent]:ml-10 data-[active]:text-primary hover:text-primary transition-colors ml-5 h-5 inline-block truncate text-muted-foreground"
             :href="`#${item.id}`"
           >
             {{ item.text }}

@@ -4,6 +4,8 @@
 
 @import "./typography.css";
 
+@import "tw-animate-css";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -142,9 +144,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overscroll-none font-sans antialiased;
   }
-
 }
 
 @utility border-grid {
@@ -159,7 +160,6 @@
   @apply px-4 xl:px-6 mx-auto max-w-screen-2xl max-sm:px-4;
 }
 
-
 @utility step {
   counter-increment: step;
   :before {
@@ -169,7 +169,6 @@
   }
 }
 
-
 html {
   color-scheme: light dark;
 }
@@ -178,4 +177,19 @@ html.dark {
 }
 html.light {
   color-scheme: light;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 5px;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }

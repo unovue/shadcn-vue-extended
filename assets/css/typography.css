@@ -183,6 +183,7 @@
         border-radius: calc(var(--spacing) * 2);
         border-style: var(--tw-border-style);
         border-width: 1px;
+        overflow: auto;
     }
 
     pre code * + *:where(:not(.not-prose, .not-prose *)) {

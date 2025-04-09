@@ -1,8 +1,7 @@
 ---
 title: AutoForm
-description: Automatically generate a form from Zod schema. 
+description: Automatically generate a form from Zod schema.
 ---
-
 
 ## What is AutoForm
 
@@ -506,4 +505,3 @@ Please note that dependencies do not have any effect on the validation of the fo
 You can create multiple dependencies for the same field and dependency type - for example to hide a field based on multiple other fields. This will then hide the field when any of the dependencies are met.
 
 ## Example
- 

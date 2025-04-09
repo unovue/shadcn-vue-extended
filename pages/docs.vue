@@ -47,55 +47,17 @@ const nav = computed(() => data.value?.[0].children)
       </aside>
 
       <main class="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
-        <div>
+        <div class="mx-auto w-full min-w-0 max-w-2xl">
+          <div class="block xl:hidden">
+            <DocTableOfContent />
+          </div>
+
           <NuxtPage />
         </div>
-        <!-- <div class="mx-auto w-full min-w-0 max-w-2xl">
-          <div class="block xl:hidden">
-            <TableOfContent />
-          </div>
-
-          <DocsBreadcrumb class="mb-4" />
-
-          <div class="space-y-2">
-            <div class="flex items-center space-x-4">
-              <h1 class="scroll-m-20 text-3xl font-bold tracking-tight">
-                {{ frontmatter.title }}
-              </h1>
-              <span v-if="frontmatter.label" class="ml-2 rounded-md bg-[#adfa1d] px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
-                {{ frontmatter.label }}
-              </span>
-            </div>
-            <p class="text-base text-muted-foreground">
-              {{ frontmatter.description }}
-            </p>
-          </div>
-
-          <div v-if="frontmatter.docs || frontmatter.source || frontmatter.primitive" class="flex items-center space-x-2 pt-4">
-            <a v-if="frontmatter.docs" :href="frontmatter.docs" target="_blank" class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 select-none border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-              <ExternalLink class="mr-1 h-3 w-3" />
-              Docs
-            </a>
-            <a v-if="frontmatter.source" :href="sourceLink + frontmatter.source" target="_blank" class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 select-none border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-              Component Source
-              <Code2 class="ml-1 h-3 w-3" />
-            </a>
-            <a v-if="frontmatter.primitive" :href="frontmatter.primitive" target="_blank" class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 select-none border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-              API Reference
-              <ExternalLink class="ml-1 h-3 w-3" />
-            </a>
-          </div>
-
-          <div class="vp-doc py-8">
-            <slot />
-          </div>
-
-          <EditLink />
-        </div> -->
 
         <div class="hidden text-sm xl:block">
           <div class="sticky top-20 -mt-6 h-[calc(100vh-3.5rem)] pt-4">
-            <DocTableOfContent show-carbon-ads />
+            <DocTableOfContent :key="$route.path" show-carbon-ads />
           </div>
         </div>
       </main>

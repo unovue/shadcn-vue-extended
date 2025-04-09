@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { ListboxItemEmits, ListboxItemProps } from 'reka-ui'
+import type { HTMLAttributes } from 'vue'
 import { cn } from '@/lib/utils'
 import { useCurrentElement } from '@vueuse/core'
 import { ListboxItem, useForwardPropsEmits, useId } from 'reka-ui'
-import { computed, type HTMLAttributes, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useCommand, useCommandGroup } from '.'
 
 const props = defineProps<ListboxItemProps & { class?: HTMLAttributes['class'] }>()
@@ -23,18 +24,18 @@ const groupContext = useCommandGroup()
 
 const isRender = computed(() => {
   if (!filterState.search) {
-    return true;
+    return true
   }
   else {
     const filteredCurrentItem = filterState.filtered.items.get(id)
     // If the filtered items is undefined means not in the all times map yet
     // Do the first render to add into the map
     if (filteredCurrentItem === undefined) {
-      return true;
+      return true
     }
 
     // Check with filter
-    return filteredCurrentItem > 0;
+    return filteredCurrentItem > 0
   }
 })
 
