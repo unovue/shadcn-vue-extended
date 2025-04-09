@@ -1,86 +1,51 @@
 <script setup lang="ts">
-import type { TableOfContentsItem } from './TableOfContentItem.vue'
-import { buttonVariants } from '@/components/ui/button'
-import { shallowRef } from 'vue'
-// import CarbonAds from '../components/CarbonAds.vue'
-import TableOfContentTree from './TableOfContentTree.vue'
+import type { TocLink } from '@nuxt/content'
 
-interface TableOfContents {
-  items: TableOfContentsItem[]
-}
+const nuxtApp = useNuxtApp()
+const { data } = useActivePage()
+const { activeHeadings, updateHeadings } = useScrollspy()
 
-defineProps<{
-  showCarbonAds?: boolean
-}>()
+const toc = computed(() => {
+  const result: TocLink[] = [];
 
-const headers = shallowRef<TableOfContents>({ items: [] })
+  (function flatten(links?: TocLink[]) {
+    if (!links)
+      return
+    links.forEach((link) => {
+      result.push(link)
+      if (link.children?.length)
+        flatten(link.children)
+    })
+  })(data.value?.body.toc?.links)
 
-function getHeadingsWithHierarchy(divId: string) {
-  const div = document.querySelector(divId)
-  if (!div)
-    return { items: [] }
+  return result
+})
 
-  const headings: HTMLHeadingElement[] = Array.from(
-    div.querySelectorAll('h2, h3'),
-  )
-  const hierarchy: TableOfContents = { items: [] }
-  let currentLevel: TableOfContentsItem | undefined
-
-  headings.forEach((heading: HTMLHeadingElement) => {
-    const level = Number.parseInt(heading.tagName.charAt(1))
-    if (!heading.id) {
-      const newId = heading.textContent
-        ?.replaceAll(/[^a-z0-9 ]/gi, '')
-        .replaceAll(' ', '-')
-        .toLowerCase()
-      heading.id = `${newId}`
-    }
-
-    const item: TableOfContentsItem = {
-      title: heading.textContent || '',
-      url: `#${heading.id}`,
-      items: [],
-      heading,
-    }
-
-    if (level === 2) {
-      hierarchy.items.push(item)
-      currentLevel = item
-    }
-    else if (level === 3 && currentLevel?.items) {
-      currentLevel.items.push(item)
-    }
-    else {
-      hierarchy.items.push(item)
-    }
-  })
-  return hierarchy
-}
-
-onBeforeMount(() => {
-  headers.value = getHeadingsWithHierarchy('.nuxt-content')
+nuxtApp.hooks.hookOnce('page:finish', () => {
+  updateHeadings([
+    ...document.querySelectorAll('h2'),
+    ...document.querySelectorAll('h3'),
+  ])
 })
 </script>
 
 <template>
-  <div class="hidden xl:block no-scrollbar h-full overflow-auto pb-16">
-    <div class="space-y-2">
-      <p class="font-medium">
-        On This Page
-      </p>
-      <TableOfContentTree :tree="headers" :level="1" />
-      <!-- <CarbonAds v-if="showCarbonAds" /> -->
-    </div>
-  </div>
+  <div>
+    <span class="text-[13px] flex items-center gap-2">On this page</span>
 
-  <div class="block xl:hidden mb-6">
-    <Collapsible>
-      <CollapsibleTrigger :class="buttonVariants({ variant: 'outline' })">
-        On This Page
-      </CollapsibleTrigger>
-      <CollapsibleContent class="text-sm mt-4 border-l pl-4">
-        <TableOfContentTree :tree="headers" :level="1" />
-      </CollapsibleContent>
-    </Collapsible>
+    <div class="relative">
+      <ul class="mt-4 space-y-2">
+        <li v-for="item in toc" :key="item.id" class="h-fit flex">
+          <a
+            :data-indent="item.depth === 3 ? '' : undefined"
+            :data-active="activeHeadings.includes(item.id) ? '' : undefined"
+            class="text-[13px] data-[indent]:ml-10 data-[active]:text-primary hover:text-primary transition-colors ml-5 h-5 inline-block truncate text-muted-foreground before:content-[''] before:absolute before:left-0 before:w-[1px] before:-translate-y-1 before:h-7 before:bg-primary before:opacity-5 before:transition data-[active]:before:opacity-100"
+            :href="`#${item.id}`"
+          >
+            {{ item.text }}
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>

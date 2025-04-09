@@ -1,4 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
+import npmCommand from './transformers/npm-command'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -54,5 +55,10 @@ export default defineNuxtConfig({
   },
   colorMode: {
     classSuffix: '',
+  },
+  hooks: {
+    'content:file:beforeParse': (ctx) => {
+      npmCommand(ctx)
+    },
   },
 })

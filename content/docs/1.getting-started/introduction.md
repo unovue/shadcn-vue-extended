@@ -41,3 +41,31 @@ Which frameworks are supported?
 This port is built to be used with Vue/Nuxt.
 ::
 ::
+
+
+```bash
+bash -sh
+```
+
+```bash
+npx shadcn-vue@latest add accordion
+```
+  
+
+```ts
+export default defineNuxtConfig({
+  content: {
+    build: {
+      markdown: {
+        // Object syntax can be used to override default options
+        rehypePlugins: {
+          'rehype-figure': {
+
+          }
+        },
+      }
+    }
+  }
+})
+
+```

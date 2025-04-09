@@ -198,7 +198,7 @@
         font-variant-ligatures: none;
         font-family: var(--font-mono);
         font-size: var(--text-sm);
-        line-height: 2;
+        line-height: 1.7;
     }
 
     table:where(:not(.not-prose, .not-prose *)) {

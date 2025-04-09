@@ -5,7 +5,7 @@ const isOpen = ref(false)
 
 const mainNav = [
   { title: 'Home', href: '/' },
-  { title: 'Docs', href: '/docs/introduction' },
+  { title: 'Docs', href: '/docs/getting-started/introduction' },
   // { title: 'Components', href: '/docs/components/accordion' },
   // { title: 'Blocks', href: '/blocks' },
   // { title: 'Themes', href: '/themes' },
