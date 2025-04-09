@@ -2,6 +2,8 @@
 
 @import "./fonts.css";
 
+@import "./typography.css";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -112,6 +114,27 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--reka-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--reka-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
 }
 
 @layer base {
@@ -121,4 +144,38 @@
   body {
     @apply bg-background text-foreground;
   }
+
+}
+
+@utility border-grid {
+  @apply border-border/30 dark:border-border border-dashed;
+}
+
+@utility container-wrapper {
+  @apply max-w-[1400px] min-[1800px]:max-w-screen-2xl min-[1400px]:border-x border-border/70 dark:border-border mx-auto w-full border-dashed;
+}
+
+@utility container {
+  @apply px-4 xl:px-6 mx-auto max-w-screen-2xl max-sm:px-4;
+}
+
+
+@utility step {
+  counter-increment: step;
+  :before {
+      @apply absolute size-7 bg-muted rounded-full font-mono font-medium text-center text-sm  inline-flex items-center justify-center indent-px;
+      @apply ml-[-46px] mt-[-4px];
+      content: counter(step);
+  }
+}
+
+
+html {
+  color-scheme: light dark;
+}
+html.dark {
+  color-scheme: dark;
+}
+html.light {
+  color-scheme: light;
 }

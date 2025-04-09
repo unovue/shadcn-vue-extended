@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  css: ['~/assets/css/tailwind.css'],
+  css: ['~/assets/css/main.css'],
   vite: {
     plugins: [
       tailwindcss(),
@@ -17,10 +17,42 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/image',
     'shadcn-nuxt',
+    '@nuxtjs/color-mode',
   ],
   eslint: {
     config: {
       standalone: false,
     },
+  },
+  components: {
+    dirs: [
+      {
+        path: '~/components/mdc',
+        global: true,
+      },
+      '~/components',
+    ],
+  },
+  content: {
+    build: {
+      markdown: {
+        highlight: {
+          theme: {
+            default: 'github-light',
+            dark: 'github-dark',
+          },
+        },
+      },
+    },
+  },
+  icon: {
+    // Render icon as svg to accommodate the class selector used by shadcn
+    mode: 'svg',
+  },
+  shadcn: {
+    prefix: '',
+  },
+  colorMode: {
+    classSuffix: '',
   },
 })
