@@ -1,15 +1,15 @@
 export const ui = [
   {
-    name: 'separator',
+    name: 'separator-label',
     type: 'registry:ui',
     dependencies: ['reka-ui'],
     files: [
       {
-        path: 'ui/separator/index.ts',
+        path: 'ui/separator-label/index.ts',
         type: 'registry:ui',
       },
       {
-        path: 'ui/separator/Separator.vue',
+        path: 'ui/separator-label/SeparatorLabel.vue',
         type: 'registry:ui',
       },
     ],

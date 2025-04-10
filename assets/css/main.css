@@ -169,6 +169,10 @@
   }
 }
 
+@utility border-inline-start-0 {
+  border-inline-start: none;
+}
+
 html {
   color-scheme: light dark;
 }

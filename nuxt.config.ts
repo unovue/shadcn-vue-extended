@@ -1,5 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
-import npmCommand from './transformers/npm-command'
+import transformBeforeParse from './transformers'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -58,7 +58,7 @@ export default defineNuxtConfig({
   },
   hooks: {
     'content:file:beforeParse': (ctx) => {
-      npmCommand(ctx)
+      transformBeforeParse(ctx)
     },
   },
 })
