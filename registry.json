@@ -3,18 +3,18 @@
   "homepage": "https://extended.shadcn-vue.com",
   "items": [
     {
-      "name": "separator",
+      "name": "separator-label",
       "type": "registry:ui",
       "dependencies": [
         "reka-ui"
       ],
       "files": [
         {
-          "path": "registry/ui/separator/index.ts",
+          "path": "registry/ui/separator-label/index.ts",
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/separator/Separator.vue",
+          "path": "registry/ui/separator-label/SeparatorLabel.vue",
           "type": "registry:ui"
         }
       ]

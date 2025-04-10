@@ -184,6 +184,7 @@
         border-style: var(--tw-border-style);
         border-width: 1px;
         overflow: auto;
+        background: color-mix(in oklab, var(--accent) 50%, transparent)
     }
 
     pre code * + *:where(:not(.not-prose, .not-prose *)) {

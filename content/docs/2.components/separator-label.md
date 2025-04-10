@@ -7,6 +7,13 @@ description: Separator with Label
 ::component-preview{path=/registry/examples/SeparatorLabel.vue}
 ::
 
+
+## Installation
+
+```bash
+npx shadcn-vue@latest add https://extended.shadcn-vue.com/r/separator-label.json
+```
+
 ## API
 
 ::auto-type-table{path=/registry/ui/separator-label/SeparatorLabel.vue}
@@ -15,5 +22,4 @@ description: Separator with Label
 
 
 
-Credit: :github-user{user=zernonia}
-
+Build by: :github-user{user=imkhoat} Ported by: :github-user{user=zernonia}

@@ -23,7 +23,7 @@ defineProps<{
         <TableHead class="text-foreground font-semibold border-x border-b bg-accent/50 px-2.5 border-inline-start-0">
           Type
         </TableHead>
-        <TableHead class="text-foreground font-semibold border-x border-b bg-accent/50 px-2.5 border-inline-start-0">
+        <TableHead class="text-foreground font-semibold border-l border-b bg-accent/50 px-2.5 border-inline-start-0">
           Default
         </TableHead>
       </TableRow>

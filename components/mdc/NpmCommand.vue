@@ -15,11 +15,11 @@ function handleCopy() {
 </script>
 
 <template>
-  <div class="not-prose language-bash relative mt-6 max-h-[650px] overflow-x-auto rounded-xl bg-accent/40 border">
+  <div class="not-prose language-bash relative mt-6 max-h-[650px] overflow-x-auto rounded-lg bg-accent/40 border">
     <Tabs v-model="packageManager" class="gap-0">
       <div class="flex items-center justify-between border-b px-1 pt-1 pb-2">
         <TabsList class="h-7 translate-y-[2px] bg-transparent gap-3 p-0 pl-1">
-          <TabsTrigger v-for="key in Object.keys(tabs)" :key="key" :value="key">
+          <TabsTrigger v-for="key in Object.keys(tabs)" :key="key" :value="key" class="rounded-sm">
             {{ key }}
           </TabsTrigger>
         </TabsList>

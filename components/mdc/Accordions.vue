@@ -10,7 +10,7 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <AccordionRoot :type collapsible class="border rounded-lg not-prose">
+  <AccordionRoot :type collapsible class="border rounded-lg overflow-hidden not-prose">
     <slot />
   </AccordionRoot>
 </template>
