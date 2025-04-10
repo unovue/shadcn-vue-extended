@@ -31,7 +31,16 @@ export default defineNuxtConfig({
         path: '~/components/mdc',
         global: true,
       },
+      {
+        path: '~/components/helper',
+      },
       '~/components',
+      {
+        path: '~/registry/examples',
+        pathPrefix: false,
+        isAsync: true,
+        global: true,
+      },
     ],
   },
   content: {

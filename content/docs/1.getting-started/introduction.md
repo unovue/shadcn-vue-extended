@@ -47,6 +47,8 @@ bash -sh
 npx shadcn-vue@latest add accordion
 ```
 
+123
+
 ```ts
 export default defineNuxtConfig({
   content: {

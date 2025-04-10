@@ -19,13 +19,13 @@ export default async (mdc: MDCParserResult) => {
       const componentPath = join(__dirname, path)
       const meta = checker.getComponentMeta(componentPath)
 
+      // TODO event/slots/exposed
       n.props = {
         ':props': JSON.stringify(meta.props.filter(i => !i.global).map(i => ({ name: i.name, description: i.description, required: i.required, type: i.type, default: i.default }))),
         ':events': JSON.stringify(meta.events.filter),
         ':slots': JSON.stringify(meta.slots),
         // ':exposed': JSON.stringify(meta.exposed),
       }
-      // console.log(n)
     }
   })
 }

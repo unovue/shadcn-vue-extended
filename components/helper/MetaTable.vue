@@ -38,7 +38,15 @@ defineProps<{
               <Icon name="lucide:info" />
             </PopoverTrigger>
             <PopoverContent class="prose p-3 bg-accent border">
-              <MDC :value="value.description" class="leading-6" partial />
+              <Suspense>
+                <MDC :value="value.description" class="leading-6" partial />
+
+                <template #fallback>
+                  <div class="w-full inline-flex items-center justify-center">
+                    loading..
+                  </div>
+                </template>
+              </Suspense>
             </PopoverContent>
           </Popover>
         </TableCell>
