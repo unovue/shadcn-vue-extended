@@ -6,6 +6,10 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
+  appConfig: {
+    website: 'https://extended.shadcn-vue.com',
+    repo: 'https://github.com/unovue/shadcn-vue-extended',
+  },
   vite: {
     plugins: [
       tailwindcss(),

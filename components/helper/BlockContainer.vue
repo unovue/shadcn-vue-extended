@@ -6,6 +6,7 @@ const props = defineProps<{
   id: string
 }>()
 
+const { website } = useAppConfig()
 const { copied, copy } = useClipboard()
 
 const tabValue = ref('preview')
@@ -45,7 +46,7 @@ const iframeURL = computed(() => `/blocks/preview/${props.id}`)
           variant="ghost"
           class="hidden md:flex size-7"
           size="icon"
-          @click="copy(`npx shadcn-vue@latest add https://extended.shadcn-vue.com/r/${id}.json`)"
+          @click="copy(`npx shadcn-vue@latest add ${website}/r/${id}.json`)"
         >
           <Icon v-if="copied" name="lucide:check" />
           <Icon v-else name="lucide:copy" />

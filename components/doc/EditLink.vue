@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { data } = useActivePage()
-const url = computed(() => `https://github.com/unovue/shadcn-vue-extended/blob/main/${data.value?.id}`)
+const { repo } = useAppConfig()
+const url = computed(() => `${repo}/blob/main/${data.value?.id}`)
 </script>
 
 <template>

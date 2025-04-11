@@ -1,10 +1,11 @@
 <script lang="ts" setup>
+const { repo } = useAppConfig()
 const route = useRoute()
 const { data: page } = await useAsyncData(route.path, () => {
   return queryCollection('content').path(route.path).first()
 })
 
-const sourceLink = 'https://github.com/unovue/shadcn-vue-extended/tree/main/'
+const sourceLink = `${repo}/tree/main/`
 </script>
 
 <template>
