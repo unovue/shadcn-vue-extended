@@ -41,10 +41,12 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.11.0",
+    "@iconify-json/lucide": "^1.2.35",
     "@nuxtjs/mdc": "^0.16.1",
     "@types/node": "^22.14.0",
     "pathe": "^2.0.3",
     "rimraf": "^6.0.1",
+    "shiki": "^3.2.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
     "unist-util-visit": "^5.0.0",

@@ -1,12 +1,14 @@
 /* eslint-disable node/prefer-global/process */
 import { exec } from 'node:child_process'
 import { promises as fs } from 'node:fs'
+import { block } from '@/registry/registry-block'
 import { ui } from '@/registry/registry-ui'
 import path from 'pathe'
 import { rimraf } from 'rimraf'
 
 const registry = [
   ...ui,
+  ...block,
 ]
 
 async function buildRegistryJsonFile() {

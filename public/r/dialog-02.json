@@ -1,0 +1,19 @@
+{
+  "$schema": "https://shadcn-vue.com/schema/registry-item.json",
+  "name": "dialog-02",
+  "type": "registry:block",
+  "dependencies": [
+    "lucide-vue-next"
+  ],
+  "registryDependencies": [
+    "button",
+    "dialog"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/dialog-02/index.vue",
+      "content": "<script setup lang=\"ts\">\nimport { Button } from '@/components/ui/button'\nimport {\n  Dialog,\n  DialogClose,\n  DialogContent,\n  DialogDescription,\n  DialogFooter,\n  DialogHeader,\n  DialogTitle,\n  DialogTrigger,\n} from '@/components/ui/dialog'\nimport { Check } from 'lucide-vue-next'\nimport { ref } from 'vue'\n\nconst open = ref(true)\n</script>\n\n<template>\n  <Dialog v-model:open=\"open\">\n    <DialogTrigger as-child>\n      <Button variant=\"outline\">\n        Show Dialog\n      </Button>\n    </DialogTrigger>\n\n    <DialogContent class=\"sm:max-w-sm flex flex-col items-center\">\n      <div class=\"flex justify-center\">\n        <div class=\"mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100\">\n          <Check class=\"h-6 w-6 text-green-600\" />\n        </div>\n      </div>\n\n      <DialogHeader class=\"text-center gap-0\">\n        <DialogTitle class=\"text-center\">\n          Payment successful\n        </DialogTitle>\n        <DialogDescription class=\"mt-2 text-center mx-auto sm:max-w-[90%]\">\n          Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur\n          amet labore.\n        </DialogDescription>\n      </DialogHeader>\n      <DialogFooter class=\"sm:justify-center w-full\">\n        <DialogClose as-child>\n          <Button class=\"w-full\">\n            Go back to dashboard\n          </Button>\n        </DialogClose>\n      </DialogFooter>\n    </DialogContent>\n  </Dialog>\n</template>\n",
+      "type": "registry:ui"
+    }
+  ]
+}
