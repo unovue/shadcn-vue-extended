@@ -49,7 +49,7 @@ const iframeURL = computed(() => `/blocks/preview/${props.id}`)
           @click="copy(`npx shadcn-vue@latest add ${website}/r/${id}.json`)"
         >
           <Icon v-if="copied" name="lucide:check" />
-          <Icon v-else name="lucide:copy" />
+          <Icon v-else name="lucide:terminal" />
         </Button>
 
         <div class="mx-2 hidden h-4 md:flex">

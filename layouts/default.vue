@@ -2,6 +2,7 @@
 import { cn } from '@/lib/utils'
 
 const isOpen = ref(false)
+const { repo } = useAppConfig()
 
 const mainNav = [
   { title: 'Home', href: '/' },
@@ -12,7 +13,7 @@ const mainNav = [
 ]
 
 const links = [
-  { name: 'GitHub', href: 'https://github.com/unovue/shadcn-vue', icon: 'lucide:github' },
+  { name: 'GitHub', href: repo, icon: 'lucide:github' },
 ]
 
 const colorMode = useColorMode()
@@ -94,20 +95,6 @@ const colorMode = useColorMode()
 
         <main class="flex flex-1 flex-col">
           <slot />
-
-          <!-- <component :is="frontmatter.layout" v-if="frontmatter.layout">
-          <slot />
-        </component>
-
-        <component is="docs" v-else-if="$route.path.includes('docs')">
-          <Content :key="$route.path" />
-        </component>
-
-        <component is="examples" v-else-if="$route.path.includes('examples')">
-          <Content :key="$route.path" />
-        </component>
-
-        <Content v-else-if="!frontmatter.layout" :key="$route.path" /> -->
         </main>
 
         <footer class="border-grid border-t py-6 md:py-0">
@@ -117,32 +104,18 @@ const colorMode = useColorMode()
                 <span>
                   Built by
                   <NuxtLink
-                    to="https://twitter.com/shadcn"
-                    target="_blank"
-                    class="font-medium underline underline-offset-4"
-                  >
-                    shadcn
-                  </NuxtLink>.
-                </span>
-                <span class="inline-block ml-1">
-                  Ported to Vue by
-                  <NuxtLink
                     to="https://github.com/unovue"
                     target="_blank"
                     class="font-medium underline underline-offset-4"
-                  >
-                    unovue
-                  </NuxtLink>
-                </span>.
+                  >unovue</NuxtLink>.
+                </span>
                 <span class="inline-block ml-1">
                   The code source is available on
                   <NuxtLink
-                    to="https://github.com/unovue/shadcn-vue"
+                    :to="repo"
                     target="_blank"
                     class="font-medium underline underline-offset-4"
-                  >
-                    GitHub
-                  </NuxtLink>.
+                  >GitHub</NuxtLink>.
                 </span>
               </p>
             </div>

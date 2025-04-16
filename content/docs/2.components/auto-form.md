@@ -10,6 +10,9 @@ AutoForm is a drop-in form builder for your internal and low-priority forms with
 ::callout
 Credit: Heavily inspired by [AutoForm](https://github.com/vantezzen/auto-form) by Vantezzen
 ::
+ 
+Build by: :github-user{user=zernonia}
+
 
 ## Installation
 
