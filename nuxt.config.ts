@@ -74,4 +74,11 @@ export default defineNuxtConfig({
       transformBeforeParse(ctx)
     },
   },
+  nitro: {
+    preset: 'cloudflare-module',
+  },
+  routeRules: {
+    '/docs/**': { static: true },
+    '/blocks/**': { static: true },
+  },
 })

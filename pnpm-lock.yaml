@@ -86,7 +86,7 @@ importers:
         version: 4.11.0(@typescript-eslint/utils@8.29.1(eslint@9.24.0(jiti@2.4.2))(typescript@5.8.3))(@vue/compiler-sfc@3.5.13)(eslint@9.24.0(jiti@2.4.2))(typescript@5.8.3)
       '@iconify-json/lucide':
         specifier: ^1.2.35
-        version: 1.2.35
+        version: 1.2.37
       '@nuxtjs/mdc':
         specifier: ^0.16.1
         version: 0.16.1(magicast@0.3.5)
@@ -586,8 +586,8 @@ packages:
     resolution: {integrity: sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify-json/lucide@1.2.35':
-    resolution: {integrity: sha512-q1OFEufIzxaiMuuLOrFmhVPvlj0asriU84w1MsfooeOAB2Tk1DFCuL61HJnb4lGxDhcxhU28m6bjYLW1fwox9Q==}
+  '@iconify-json/lucide@1.2.37':
+    resolution: {integrity: sha512-fiI8A8prb0WPvc5YDIbW1SVlRKwJpR3YGBe41U0Gen1/B9I41K9miU2yAk1e6NVLEdkj17hG0hdaQrAIbs+2Pw==}
 
   '@iconify/collections@1.0.535':
     resolution: {integrity: sha512-xSfeH/CYS1vQ5LCXDVAgsEfhYzFZDMZMlPJmqZmCod0P46IcMvBrZnwGSdT6KBJMdlVvjzCoOq2s4oml/gxs6A==}
@@ -5550,7 +5550,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.2': {}
 
-  '@iconify-json/lucide@1.2.35':
+  '@iconify-json/lucide@1.2.37':
     dependencies:
       '@iconify/types': 2.0.0
 
