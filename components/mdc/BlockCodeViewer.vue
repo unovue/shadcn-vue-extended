@@ -1,24 +1,27 @@
 <script setup lang="ts">
+import { cn } from '@/lib/utils'
 import { TreeItem, TreeRoot } from 'reka-ui'
 
 const props = defineProps<{
   id: string
+  inContainer?: boolean
 }>()
 
-const activeFile = ref<FileTree>()
+const activeFile = ref<FileTreeWithParent>()
 const expandedKeys = ref<string[]>([])
 
-const { data } = useFileTree(props.id)
+const { data, flattenData } = useFileTree(props.id)
 
 watch(data, () => {
-  // always open `index.vue` by default
-  activeFile.value = data.value?.find(i => i.name === 'index.vue')
+  activeFile.value = flattenData.value.find(d => d.content)
+  if (activeFile.value)
+    expandedKeys.value = activeFile.value.parents ?? []
 }, { immediate: true })
 </script>
 
 <template>
-  <div class="flex h-full text-foreground group-data-[view=preview]/block-view-wrapper:hidden">
-    <div class="w-[280px]">
+  <div :class="cn('flex h-full text-foreground group-data-[view=preview]/block-view-wrapper:hidden', props.inContainer ? '' : 'overflow-hidden border rounded-lg my-4 not-prose h-120')">
+    <div :class="cn('w-70', props.inContainer ? '' : 'w-56')">
       <div class="min-h-full w-full flex flex-col">
         <div class="flex h-full flex-col w-full flex-1 border-r bg-accent/50 text-foreground">
           <div class="duration-200 flex shrink-0 items-center font-medium outline-none ease-linear h-12 rounded-none border-b px-4 text-sm text-foreground">
@@ -47,22 +50,22 @@ watch(data, () => {
                 variant="ghost"
                 :data-active="isSelected"
                 class="flex w-full justify-start whitespace-nowrap rounded-none pl-[--index] hover:bg-accent hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground active:bg-accent active:text-foreground data-[active=true]:bg-accent dark:data-[active=true]:bg-accent data-[active=true]:text-foreground"
-                :style="{ 'padding-left': `${(item.level - 0.25) * 1.5}rem` }"
+                :style="{ 'padding-left': `${(item.level - 0.25)}rem` }"
               >
                 <template v-if="item.hasChildren">
                   <Icon
                     name="lucide:chevron-right"
-                    class="h-4 w-4 transition-transform"
+                    class="size-3.5 transition-transform"
                     :class="{ 'rotate-90': isExpanded } "
                   />
-                  <Icon name="lucide:file" class="h-4 w-4" />
+                  <Icon name="lucide:folder" class="size-3.5" />
                 </template>
                 <template v-else>
                   <Icon
                     name="lucide:chevron-right"
                     class="invisible"
                   />
-                  <Icon name="lucide:file" class="h-4 w-4" />
+                  <Icon name="lucide:file" class="size-3.5" />
                 </template>
                 <div>
                   {{ item.value.name }}

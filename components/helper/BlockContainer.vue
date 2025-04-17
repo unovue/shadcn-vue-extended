@@ -122,7 +122,7 @@ const iframeURL = computed(() => `/blocks/preview/${props.id}`)
         </ResizablePanelGroup>
       </TabsContent>
       <TabsContent value="code" class="h-full">
-        <BlockViewerCode :id />
+        <BlockCodeViewer :id in-container />
       </TabsContent>
     </div>
   </Tabs>

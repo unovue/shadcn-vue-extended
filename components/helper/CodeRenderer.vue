@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// TODO: perhaps we can improve by tappign into `nuxt/mdc`'s shiki
-import { createHighlighter } from 'shiki'
-
 const props = withDefaults(defineProps<{
   code?: string
   lang?: string
@@ -10,27 +7,26 @@ const props = withDefaults(defineProps<{
   lang: 'vue',
 })
 
-const highlighter = await createHighlighter({
-  themes: ['github-dark', 'github-light'],
-  langs: ['vue', 'typescript'],
-})
+const highlighter = await useShiki()
 
 const html = ref('')
 
-watch(props, async () => {
-  html.value = ''
-  html.value = highlighter.codeToHtml(props.code, {
-    lang: props.lang,
-    themes: {
-      light: 'github-light',
-      dark: 'github-dark',
-    },
-  })
-}, { immediate: true })
+watch(() => props.code, async () => {
+  if (props.code) {
+    html.value = ''
+    html.value = highlighter.codeToHtml(props.code, {
+      lang: props.lang,
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark',
+      },
+    })
+  }
+}, { immediate: true, deep: true })
 </script>
 
 <template>
-  <div class="p-4 [&_pre]:!bg-transparent text-sm" v-html="html" />
+  <div :key="html" class="p-4 [&_pre]:!bg-transparent text-sm [&_.line]:!inline" v-html="html" />
 </template>
 
 <style>

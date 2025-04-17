@@ -10,6 +10,10 @@ export interface FileTree {
   children?: FileTree[]
 }
 
+export interface FileTreeWithParent extends FileTree {
+  parents?: string[]
+}
+
 export function useFileTree(id: string) {
   const { data } = useNuxtData<FileTree[]>(`file-tree-${id}`)
 
@@ -29,8 +33,34 @@ export function useFileTree(id: string) {
     }
   })
 
+  const flattenData = computed(() => {
+    if (!data.value)
+      return []
+
+    const result: FileTreeWithParent[] = []
+
+    function traverse(node: FileTreeWithParent, parentNames: string[] = []) {
+      const nodeCopy: FileTreeWithParent = { ...node }
+      nodeCopy.parents = [...parentNames]
+      result.push(nodeCopy)
+      if (node.children && node.children.length > 0) {
+        const updatedParents = [...parentNames, node.name]
+        for (const child of node.children) {
+          traverse(child, updatedParents)
+        }
+      }
+    }
+
+    for (const node of data.value) {
+      traverse(node)
+    }
+
+    return result
+  })
+
   return {
     data,
+    flattenData,
   }
 }
 

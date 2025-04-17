@@ -78,7 +78,7 @@ export default defineNuxtConfig({
     preset: 'cloudflare-module',
   },
   routeRules: {
-    '/docs/**': { static: true },
-    '/blocks/**': { static: true },
+    '/docs/**': { prerender: true },
+    '/blocks/**': { prerender: true },
   },
 })
