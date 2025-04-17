@@ -20,6 +20,97 @@
       ]
     },
     {
+      "name": "auto-form",
+      "type": "registry:ui",
+      "dependencies": [
+        "vee-validate",
+        "@vee-validate/zod",
+        "zod",
+        "reka-ui"
+      ],
+      "registryDependencies": [
+        "form",
+        "accordion",
+        "button",
+        "separator",
+        "checkbox",
+        "switch",
+        "calendar",
+        "popover",
+        "label",
+        "radio-group",
+        "select",
+        "input",
+        "textarea"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/auto-form/AutoForm.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormField.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldArray.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldBoolean.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldDate.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldEnum.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldFile.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldInput.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldNumber.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldObject.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormLabel.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/constant.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/dependencies.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/index.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/interface.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/utils.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "dialog-01",
       "type": "registry:block",
       "dependencies": [
@@ -50,6 +141,43 @@
         {
           "path": "registry/blocks/dialog-02/index.vue",
           "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "supabase-client",
+      "type": "registry:block",
+      "dependencies": [
+        "@supabase/supabase-js"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/supabase-client/lib/supabase/client.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "supabase-realtime-cursor",
+      "type": "registry:block",
+      "dependencies": [
+        "lucide-vue-next"
+      ],
+      "registryDependencies": [
+        "https://extended.shadcn-vue.com/r/supabase-client.json"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/supabase-realtime-cursor/components/Cursor.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/blocks/supabase-realtime-cursor/components/RealtimeCursor.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/blocks/supabase-realtime-cursor/composables/useRealtimeCursors.ts",
+          "type": "registry:hook"
         }
       ]
     }

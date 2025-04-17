@@ -29,4 +29,35 @@ export const block = [
       },
     ],
   },
+  {
+    name: 'supabase-client',
+    type: 'registry:block',
+    dependencies: ['@supabase/supabase-js'],
+    files: [
+      {
+        path: 'blocks/supabase-client/lib/supabase/client.ts',
+        type: 'registry:lib',
+      },
+    ],
+  },
+  {
+    name: 'supabase-realtime-cursor',
+    type: 'registry:block',
+    dependencies: ['lucide-vue-next'],
+    registryDependencies: ['https://extended.shadcn-vue.com/r/supabase-client.json'],
+    files: [
+      {
+        path: 'blocks/supabase-realtime-cursor/components/Cursor.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'blocks/supabase-realtime-cursor/components/RealtimeCursor.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'blocks/supabase-realtime-cursor/composables/useRealtimeCursors.ts',
+        type: 'registry:hook',
+      },
+    ],
+  },
 ]
