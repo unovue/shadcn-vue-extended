@@ -1,6 +1,7 @@
 ---
 title: SeparatorLabel
 description: Separator with Label
+contributors: ['imkhoat', 'zernonia']
 ---
 
 
@@ -18,8 +19,3 @@ npx shadcn-vue@latest add https://extended.shadcn-vue.com/r/separator-label.json
 
 ::auto-type-table{path=/registry/ui/separator-label/SeparatorLabel.vue}
 ::
-
-
-
-
-Build by: :github-user{user=imkhoat} Ported by: :github-user{user=zernonia}

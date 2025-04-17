@@ -52,6 +52,8 @@ const nav = computed(() => data.value?.[0].children)
             <DocTableOfContent />
           </div>
 
+          <DocBreadcrumb class="mb-4" />
+
           <NuxtPage />
         </div>
 
