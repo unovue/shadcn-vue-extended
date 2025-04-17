@@ -14,7 +14,7 @@ function handleCopy() {
 </script>
 
 <template>
-  <div class="not-prose ">
+  <div class="not-prose">
     <Tabs default-value="preview">
       <TabsList>
         <TabsTrigger value="preview">

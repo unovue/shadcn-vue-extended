@@ -5,7 +5,6 @@ const props = defineProps<{
 
 interface GitHubUser {
   user: {
-
     id: number
     username: string
     name: string

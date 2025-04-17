@@ -12,6 +12,8 @@ const expandedKeys = ref<string[]>([])
 
 const { data, flattenData } = useFileTree(props.id)
 
+const activeFileLang = computed(() => activeFile.value?.name.substr(activeFile.value?.name.lastIndexOf('.') + 1))
+
 watch(data, () => {
   activeFile.value = flattenData.value.find(d => d.content)
   if (activeFile.value)
@@ -85,7 +87,7 @@ watch(data, () => {
         </div>
       </div>
       <div class="overflow-auto">
-        <CodeRenderer :code="activeFile?.content" />
+        <CodeRenderer :code="activeFile?.content" :lang="activeFileLang" />
       </div>
     </div>
   </div>

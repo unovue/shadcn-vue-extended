@@ -24,6 +24,15 @@ const sourceLink = `${repo}/tree/main/`
       </p>
     </div>
 
+    <NuxtLink v-if="page.meta.reference" :to="page.meta.reference" target="_blank" class="not-prose inline-flex items-center gap-1 px-2 py-1 rounded-full bg-accent text-xs font-semibold text-muted-foreground hover:text-accent-foreground my-2">
+      API Reference
+      <Icon name="lucide:external-link" class="size-3" />
+    </NuxtLink>
+
+    <div v-if="page.meta.contributors" class="text-sm text-muted-foreground my-1">
+      Contributors: <GithubUser v-for="user in page.meta.contributors" :key="user" :user />
+    </div>
+
     <div v-if="page.meta.docs || page.meta.source || page.meta.primitive" class="flex items-center space-x-2 pt-4">
       <NuxtLink v-if="typeof page.meta.docs === 'string'" :to="page.meta.docs" target="_blank" class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 select-none border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
         <Icon name="lucide:external-link" class="mr-1 h-3 w-3" />
