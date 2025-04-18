@@ -48,11 +48,11 @@ export const block = [
     files: [
       {
         path: 'blocks/supabase-realtime-cursor/components/Cursor.vue',
-        type: 'registry:ui',
+        type: 'registry:component',
       },
       {
         path: 'blocks/supabase-realtime-cursor/components/RealtimeCursor.vue',
-        type: 'registry:ui',
+        type: 'registry:component',
       },
       {
         path: 'blocks/supabase-realtime-cursor/composables/useRealtimeCursors.ts',
