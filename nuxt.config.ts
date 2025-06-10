@@ -3,7 +3,7 @@ import transformBeforeParse from './transformers'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
+  compatibilityDate: '2025-05-05',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   appConfig: {
@@ -58,6 +58,10 @@ export default defineNuxtConfig({
         },
       },
     },
+    database: {
+      type: 'd1',
+      bindingName: 'DB',
+    },
   },
   icon: {
     // Render icon as svg to accommodate the class selector used by shadcn
@@ -76,9 +80,13 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'cloudflare-module',
-  },
-  routeRules: {
-    '/docs/**': { prerender: true },
-    '/blocks/**': { prerender: true },
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true,
+      wrangler: {
+        d1_databases:
+        [{ binding: 'DB', database_id: 'a381028a-a45e-4f8c-ad0c-0a2a0baf1b25' }],
+      },
+    },
   },
 })
