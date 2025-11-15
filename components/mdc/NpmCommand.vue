@@ -19,7 +19,7 @@ const { packageManager } = useConfig()
         </TabsList>
       </div>
       <TabsContent v-for="([key, value]) in Object.entries(tabs)" :key="key" :value="key" class="overflow-auto">
-        <pre class="language-bash shiki shiki-themes github-light github-dark w-full py-4"><code class="px-4"><span class="line"><span>{{ value }}</span></span></code></pre>
+        <pre class="language-bash shiki shiki-themes github-light github-dark w-full inline-flex py-4"><code class="px-4"><span class="line"><span>{{ value }}</span></span></code></pre>
       </TabsContent>
     </Tabs>
     <CopyCodeButton class="absolute top-1.5 right-1.5" :code="props.tabs[packageManager]" />
