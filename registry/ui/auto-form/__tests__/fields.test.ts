@@ -255,16 +255,18 @@ describe('field type resolution (one mount per field type)', () => {
     expect(remaining[0].attributes('name')).toBe('tags[0]')
   })
 
-  // BUG(#3): an enum nested inside an array item fails to reflect its
-  // current/initial value in the Select trigger. The underlying vee-validate
-  // field value IS correct (the hidden mirror <select> shows the right
-  // `value` attribute), but the visible SelectValue renders empty
-  // (data-placeholder) instead of the matched option's label. This
-  // reproduces for a plain enum item too — it is not specific to
-  // preprocess — but is characterized here with a z.preprocess-wrapped enum
-  // per the known-bugs list, since AutoFormFieldArray computes its item
-  // shape from the raw (non-unwrapped) item schema.
-  it('pins BUG #3: array-nested enum does not display its matched initial value', async () => {
+  // BUG(#3) fixed: an enum nested inside an array item used to fail to
+  // reflect its current/initial value in the Select trigger. Root cause
+  // (found while implementing #5): AutoFormFieldArray's `itemShape` computed
+  // never extracted `options` from the (possibly wrapped, e.g.
+  // preprocess-wrapped) item schema, so AutoFormFieldEnum received
+  // `options: undefined` and rendered zero SelectItems — the hidden mirror
+  // <select> had the right `value`, but there was no matching <option> for
+  // SelectValue to resolve a label from. `itemShape` now mirrors
+  // AutoForm.vue's top-level shape extraction: unwrap via getBaseSchema and
+  // pull `options` off the base schema (array `_def.values` for ZodEnum,
+  // Object.values() of the map for ZodNativeEnum).
+  it('fixes BUG #3: array-nested enum renders its options and displays its matched initial value', async () => {
     const itemSchema = z.preprocess(v => (typeof v === 'string' ? v.toLowerCase() : v), z.enum(['red', 'green']))
     const schema = z.object({ colors: z.array(itemSchema) })
 
@@ -286,11 +288,14 @@ describe('field type resolution (one mount per field type)', () => {
     // The underlying field value is correctly normalized to 'green' (matches
     // an option)...
     expect(wrapper.find('select[name="colors[0]"]').attributes('value')).toBe('green')
-    // ...but the visible trigger fails to show it, rendering the empty
-    // placeholder instead of "Green".
+    // One SelectItem per enum value is now rendered...
+    const values = wrapper.findAll('select[name="colors[0]"] option').map(o => o.attributes('value'))
+    expect(values).toEqual(['red', 'green'])
+    // ...and the visible trigger now shows the matched option's label
+    // instead of the empty placeholder.
     const selectValue = wrapper.find('[data-slot="select-value"]')
-    expect(selectValue.attributes('data-placeholder')).toBe('')
-    expect(selectValue.text()).toBe('')
+    expect(selectValue.attributes('data-placeholder')).toBeUndefined()
+    expect(selectValue.text()).toBe('Green')
   })
 
   // FIXED(#12): AutoForm.vue's shape-extraction loop now detects ZodReadonly
