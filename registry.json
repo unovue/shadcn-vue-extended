@@ -45,7 +45,9 @@
         "radio-group",
         "select",
         "input",
-        "textarea"
+        "textarea",
+        "tags-input",
+        "pin-input"
       ],
       "files": [
         {
@@ -86,6 +88,14 @@
         },
         {
           "path": "registry/ui/auto-form/AutoFormFieldObject.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldPin.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldTags.vue",
           "type": "registry:ui"
         },
         {
