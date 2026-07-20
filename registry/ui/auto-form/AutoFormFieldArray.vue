@@ -10,7 +10,7 @@ import { computed, provide } from 'vue'
 import * as z from 'zod'
 import AutoFormField from './AutoFormField.vue'
 import AutoFormLabel from './AutoFormLabel.vue'
-import { beautifyObjectName, getBaseType } from './utils'
+import { beautifyObjectName, getBaseSchema, getBaseType } from './utils'
 
 const props = defineProps<{
   fieldName: string
@@ -43,9 +43,20 @@ const itemShape = computed(() => {
       ? props.schema._def.innerType._def.type
       : null
 
+  // Mirrors AutoForm.vue's `shapes` computed: unwrap to the base schema and
+  // pull enum options off it (ZodEnum has an array `_def.values`; ZodNativeEnum
+  // has an object map that needs Object.values()). Without this, an enum
+  // nested inside an array item gets `options: undefined` and renders no
+  // SelectItem/RadioGroupItem at all.
+  const baseItem = getBaseSchema(schema) as z.ZodAny
+  let options = (baseItem && 'values' in baseItem._def) ? baseItem._def.values as string[] : undefined
+  if (!Array.isArray(options) && typeof options === 'object')
+    options = Object.values(options)
+
   return {
     type: getBaseType(schema),
     schema,
+    options,
   }
 })
 
