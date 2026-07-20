@@ -84,6 +84,10 @@ export const ui = [
         type: 'registry:ui',
       },
       {
+        path: 'ui/auto-form/AutoFormFieldWrapper.vue',
+        type: 'registry:ui',
+      },
+      {
         path: 'ui/auto-form/AutoFormLabel.vue',
         type: 'registry:ui',
       },
