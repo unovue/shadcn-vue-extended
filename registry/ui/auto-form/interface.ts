@@ -32,6 +32,7 @@ export interface InputComponents {
   object: Component
   // Phase 4D
   tags: Component
+  pin: Component
 };
 
 export interface ConfigItem {

@@ -42,6 +42,7 @@ export const ui = [
       'input',
       'textarea',
       'tags-input',
+      'pin-input',
     ],
     files: [
       {
@@ -82,6 +83,10 @@ export const ui = [
       },
       {
         path: 'ui/auto-form/AutoFormFieldObject.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/auto-form/AutoFormFieldPin.vue',
         type: 'registry:ui',
       },
       {
