@@ -4,10 +4,8 @@ description: Separator with Label
 contributors: ['imkhoat', 'zernonia']
 ---
 
-
 ::component-preview{path=/registry/examples/SeparatorLabel.vue}
 ::
-
 
 ## Installation
 
