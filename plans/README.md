@@ -19,8 +19,8 @@ row when done.
 | 003 | Make `pnpm lint` pass on a clean checkout | P1 | S | — | DONE (approved; commit e3428dc on `advisor/003-fix-lint-baseline`, worktree `.claude/worktrees/agent-afd2270a62bc40420`) |
 | 004 | Add CI: lint, registry drift check, site build | P1 | M | 003, 005 | DONE (approved; commit eca6027 on `advisor/004-ci-workflow`, worktree `.claude/worktrees/agent-a72b84a681f063cd0`. Branch contains 003 + cherry-picked 005 commits + CI. Drift check hardened to `git status --porcelain` after upstream CLI output drift hit the original `git diff` form) |
 | 006 | AutoForm enhancement program (all 19 open issues; 5 phases) | P1 | L | — | IN PROGRESS (program; phases split below; work lands on `feat/autoform`) |
-| 007 | AutoForm Phase 0: vitest harness + characterization tests | P1 | M | — | IN PROGRESS (executor dispatched) |
-| 008 | AutoForm Phase 1: seven bug fixes (2 parallel batches) | P1 | M | 007 | TODO (dispatch after 007 merges) |
+| 007 | AutoForm Phase 0: vitest harness + characterization tests | P1 | M | — | DONE (approved; commits c6a14a4 + 23f21f8 merged into `feat/autoform`; 63 tests; also added missing calendar/radio-group/switch/native-select primitives. Tracking PR: #20) |
+| 008 | AutoForm Phase 1: seven bug fixes (2 parallel batches) | P1 | M | 007 | IN PROGRESS (batches A + B dispatched) |
 | 005 | Registry metadata, Supabase env docs, block install paths | P2 | M | — | DONE (approved; commits 7134f8e + cbee554 on `advisor/005-registry-metadata`, worktree `.claude/worktrees/agent-a8363a7a0980b8b4f`. Deviation approved: no `target` on dialog files — empirically, `target` bypasses the `@/components` alias; `registry:component` without target installs correctly) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
@@ -42,4 +42,6 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 ## New findings surfaced during execution (follow-ups, not yet planned)
 
 - ~~**`supabase-client` installs to a nested path**~~: OBSOLETE — all Supabase items were removed on 2026-07-20 (commit 427308f) in favor of official Supabase UI Vue/Nuxt support.
+- **AutoForm array removal is a no-op for non-last items** (found during plan 007 characterization; worse than issue #5's ghost-entry symptom): only removing the last item reliably shrinks the list. Fold into plan 008 Batch B4.
+- **AutoForm file field never binds `componentField`** (found during plan 007): `AutoFormFieldFile.vue` doesn't spread `slotProps.componentField` onto its input, unlike every other field — likely means file values never reach the form model. Verify and fix in a later phase (candidate for 008 follow-up or Phase 3).
 - **`shadcn-vue@latest` output format drifted** (type-key position + new `public/r/registry.json` index): absorbed by plan 005's regeneration; consider pinning the CLI version in `scripts/build-registry.ts` if the CI drift job flakes again.
