@@ -57,6 +57,19 @@ export interface ConfigItem {
   /** Hide `FormLabel`. */
   hideLabel?: boolean
   inputProps?: InputHTMLAttributes
+
+  // ---- Phase 4C ----
+  /**
+   * Explicit value/label pairs for an enum-rendered field (`select` or
+   * `radio` variant of `AutoFormFieldEnum`). When set, this takes
+   * precedence over the schema-derived `options` (plain strings, where the
+   * string doubles as both value and beautified label): each option's
+   * `label` is displayed and its `value` is what gets submitted. This is a
+   * rendering-only concern — the underlying zod enum/literal union must
+   * still validate against the `value`s listed here; keeping the two in
+   * sync is the consumer's responsibility.
+   */
+  options?: Array<{ value: string, label: string }>
 }
 
 // Define a type to unwrap an array
