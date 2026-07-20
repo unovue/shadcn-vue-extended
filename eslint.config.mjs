@@ -7,6 +7,7 @@ export default withNuxt(
       'public/r/**',
       'registry.json',
       'plans/**',
+      '.claude/**',
     ],
   }),
 )
