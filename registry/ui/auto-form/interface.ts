@@ -30,6 +30,8 @@ export interface InputComponents {
   file: Component
   array: Component
   object: Component
+  // Phase 4D
+  tags: Component
 };
 
 export interface ConfigItem {

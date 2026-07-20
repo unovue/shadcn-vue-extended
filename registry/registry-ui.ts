@@ -41,6 +41,7 @@ export const ui = [
       'select',
       'input',
       'textarea',
+      'tags-input',
     ],
     files: [
       {
@@ -81,6 +82,10 @@ export const ui = [
       },
       {
         path: 'ui/auto-form/AutoFormFieldObject.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/auto-form/AutoFormFieldTags.vue',
         type: 'registry:ui',
       },
       {
