@@ -293,16 +293,16 @@ describe('field type resolution (one mount per field type)', () => {
     expect(selectValue.text()).toBe('')
   })
 
-  // BUG(#12): nothing in getBaseSchema/getBaseType or the field components is
-  // aware of ZodReadonly, so a `.readonly()` field renders as a fully
-  // editable, non-disabled control.
-  it('pins BUG #12: a .readonly() field renders as editable (no disabled attribute)', async () => {
-    const schema = z.object({ id: z.string().readonly() })
+  // FIXED(#12): AutoForm.vue's shape-extraction loop now detects ZodReadonly
+  // anywhere in the wrapper stack (via utils.ts's isReadonlyInZodStack) and
+  // skips the field entirely, rather than silently unwrapping ZodReadonly
+  // like any other wrapper and rendering an editable control.
+  it('fixes BUG #12: a top-level .readonly() field is skipped entirely (renders nothing)', async () => {
+    const schema = z.object({ id: z.string().readonly(), name: z.string() })
     const wrapper = mount(AutoForm as any, { props: { schema } })
     await flushPromises()
-    const input = wrapper.find('input[name="id"]')
-    expect(input.exists()).toBe(true)
-    expect(input.attributes('disabled')).toBeUndefined()
-    expect(input.attributes('readonly')).toBeUndefined()
+    expect(wrapper.find('input[name="id"]').exists()).toBe(false)
+    // sibling fields are unaffected
+    expect(wrapper.find('input[name="name"]').exists()).toBe(true)
   })
 })
