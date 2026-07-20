@@ -121,13 +121,17 @@ describe('useDependencies via <AutoForm dependencies>', () => {
       expect(xLabel.find('span').text()).toBe('*')
     })
 
-    // BUG(#2/#14): DependencyType.REQUIRES only ever drives the visual
-    // asterisk (isRequired feeds FieldProps.required for the label). It does
-    // NOT alter the zod validation schema, which is fixed once at mount via
-    // toTypedSchema(props.schema). So even with the dependency active and the
-    // (schema-optional) target field left empty, the form still submits
-    // successfully — the "required" indicator is cosmetic only.
-    it('still submits successfully with the target field left empty, despite the active REQUIRES dependency', async () => {
+    // FIXED(#2/#14): DependencyType.REQUIRES used to only ever drive the
+    // visual asterisk (isRequired feeds FieldProps.required for the label)
+    // and never touched the zod validation schema, which was fixed once at
+    // mount via toTypedSchema(props.schema). So even with the dependency
+    // active and the (schema-optional) target field left empty, the form
+    // used to still submit successfully — the "required" indicator was
+    // cosmetic only. AutoForm.vue now layers `getRequiresDependencyIssues()`
+    // onto the typed schema's `parse()` step (see dependencies.ts), so an
+    // active REQUIRES dependency now genuinely blocks submission when its
+    // target is empty.
+    it('blocks submission and renders a form error when the target field is left empty while the REQUIRES dependency is active', async () => {
       const onSubmit = vi.fn()
       const wrapper = mount(AutoForm as any, {
         props: { schema, dependencies },
@@ -143,9 +147,169 @@ describe('useDependencies via <AutoForm dependencies>', () => {
       await wait(20)
       await flushPromises()
 
+      expect(onSubmit).not.toHaveBeenCalled()
+      const messages = wrapper.findAll('[data-slot="form-message"]').map(m => m.text())
+      expect(messages.some(text => text.length > 0)).toBe(true)
+    })
+
+    it('submits successfully with the target field left empty when the REQUIRES dependency is inactive', async () => {
+      const onSubmit = vi.fn()
+      const wrapper = mount(AutoForm as any, {
+        props: { schema, dependencies },
+        attrs: { onSubmit },
+      })
+      await flushPromises()
+      // `hasX` is a required (non-optional, no default) boolean, so toggle
+      // it to a concrete `false` (rather than leaving it `undefined`) to
+      // isolate "dependency inactive" from "base schema rejects an unset
+      // required field" — an unrelated failure mode.
+      await toggleSource(wrapper)
+      await toggleSource(wrapper)
+
+      expect(wrapper.find('input[name="x"]').element.value).toBe('')
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      await wait(20)
+      await flushPromises()
+
       expect(onSubmit).toHaveBeenCalledTimes(1)
-      expect(onSubmit.mock.calls[0][0]).toEqual({ hasX: true })
+      expect(onSubmit.mock.calls[0][0]).toEqual({ hasX: false })
       expect(wrapper.findAll('[data-slot="form-message"]').every(m => m.text() === '')).toBe(true)
+    })
+  })
+
+  describe('dependencyType.REQUIRES with a when() reading both source and target values', () => {
+    const schema = z.object({
+      hasX: z.boolean(),
+      x: z.string().optional(),
+    })
+    // `when(sourceFieldValue, targetFieldValue)` — per interface.ts's
+    // BaseDependency shape — receives the *target* field's own current value
+    // as its second argument. This exercises that both arguments are
+    // plumbed through correctly at validation time (not just at render
+    // time, which the asterisk tests above already cover).
+    const when = vi.fn((sourceValue: any, targetValue: any) => sourceValue === true && targetValue !== 'ignored')
+    const dependencies = [
+      { sourceField: 'hasX', targetField: 'x', type: DependencyType.REQUIRES, when },
+    ]
+
+    it('blocks submit when active (source true) and the target is left empty', async () => {
+      when.mockClear()
+      const onSubmit = vi.fn()
+      const wrapper = mount(AutoForm as any, { props: { schema, dependencies }, attrs: { onSubmit } })
+      await flushPromises()
+      await toggleSource(wrapper)
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      await wait(20)
+      await flushPromises()
+
+      expect(onSubmit).not.toHaveBeenCalled()
+      expect(when).toHaveBeenCalledWith(true, undefined)
+    })
+
+    it('submits fine when inactive (source false), leaving the target empty', async () => {
+      when.mockClear()
+      const onSubmit = vi.fn()
+      const wrapper = mount(AutoForm as any, { props: { schema, dependencies }, attrs: { onSubmit } })
+      await flushPromises()
+      // Toggle to a concrete `false` (see comment above) rather than
+      // leaving the required `hasX` boolean unset.
+      await toggleSource(wrapper)
+      await toggleSource(wrapper)
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      await wait(20)
+      await flushPromises()
+
+      expect(onSubmit).toHaveBeenCalledTimes(1)
+      expect(when).toHaveBeenCalledWith(false, undefined)
+    })
+  })
+
+  describe('dependencyType.REQUIRES boundary values (false and 0 are not empty)', () => {
+    it('submits successfully when an active dependency targets a `false` boolean value', async () => {
+      const schema = z.object({
+        hasX: z.boolean().default(true),
+        flag: z.boolean().default(false),
+      })
+      const dependencies = [
+        { sourceField: 'hasX', targetField: 'flag', type: DependencyType.REQUIRES, when: (v: any) => v === true },
+      ]
+      const onSubmit = vi.fn()
+      const wrapper = mount(AutoForm as any, { props: { schema, dependencies }, attrs: { onSubmit } })
+      await flushPromises()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      await wait(20)
+      await flushPromises()
+
+      expect(onSubmit).toHaveBeenCalledTimes(1)
+      expect(onSubmit.mock.calls[0][0]).toEqual({ hasX: true, flag: false })
+      expect(wrapper.findAll('[data-slot="form-message"]').every(m => m.text() === '')).toBe(true)
+    })
+
+    it('submits successfully when an active dependency targets a `0` numeric value', async () => {
+      const schema = z.object({
+        hasX: z.boolean().default(true),
+        count: z.number().default(0),
+      })
+      const dependencies = [
+        { sourceField: 'hasX', targetField: 'count', type: DependencyType.REQUIRES, when: (v: any) => v === true },
+      ]
+      const onSubmit = vi.fn()
+      const wrapper = mount(AutoForm as any, { props: { schema, dependencies }, attrs: { onSubmit } })
+      await flushPromises()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      await wait(20)
+      await flushPromises()
+
+      expect(onSubmit).toHaveBeenCalledTimes(1)
+      expect(onSubmit.mock.calls[0][0]).toEqual({ hasX: true, count: 0 })
+      expect(wrapper.findAll('[data-slot="form-message"]').every(m => m.text() === '')).toBe(true)
+    })
+  })
+
+  // #15: dependency evaluation must be a pure function of
+  // (initialValues, schema, dependencies) at first render, so SSR and
+  // client hydration produce the same layout. This mounts with a HIDES
+  // dependency that is active purely from schema defaults (no interaction,
+  // no `await`) and asserts the hidden state is already correct
+  // synchronously after `mount()` — matching what a synchronous SSR render
+  // pass would see. See NOTES in dependencies.ts / the phase-2 commit for
+  // the full code-reading analysis this backs up.
+  describe('first-render determinism (#15)', () => {
+    it('reflects an active HIDES dependency synchronously on the very first render tick', () => {
+      const schema = z.object({
+        hasX: z.boolean().default(true),
+        x: z.string().optional(),
+      })
+      const dependencies = [
+        { sourceField: 'hasX', targetField: 'x', type: DependencyType.HIDES, when: (v: any) => v === true },
+      ]
+
+      const wrapper = mount(AutoForm as any, { props: { schema, dependencies } })
+      // Deliberately no `await flushPromises()` / `nextTick()` here.
+      expect(wrapper.find('input[name="x"]').exists()).toBe(false)
+    })
+
+    it('leaves the target field rendered on the first tick when the dependency is inactive by default', () => {
+      const schema = z.object({
+        hasX: z.boolean().default(false),
+        x: z.string().optional(),
+      })
+      const dependencies = [
+        { sourceField: 'hasX', targetField: 'x', type: DependencyType.HIDES, when: (v: any) => v === true },
+      ]
+
+      const wrapper = mount(AutoForm as any, { props: { schema, dependencies } })
+      expect(wrapper.find('input[name="x"]').exists()).toBe(true)
     })
   })
 

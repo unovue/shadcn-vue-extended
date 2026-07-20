@@ -7,7 +7,7 @@ import { Form } from '@/components/ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import { computed, toRefs } from 'vue'
 import AutoFormField from './AutoFormField.vue'
-import { provideDependencies } from './dependencies'
+import { provideDependencies, withDependencyValidation } from './dependencies'
 import { getBaseSchema, getBaseType, getDefaultValueInZodStack, getObjectFormSchema, isReadonlyInZodStack } from './utils'
 
 const props = defineProps<{
@@ -75,7 +75,11 @@ const formComponentProps = computed(() => {
     }
   }
   else {
-    const formSchema = toTypedSchema(props.schema)
+    // Layer REQUIRES-dependency validation onto the typed schema without
+    // touching `props.schema` itself — `cast()`/`describe()` must keep
+    // reading the original schema so default-value extraction is unaffected
+    // (see NOTES in dependencies.ts).
+    const formSchema = withDependencyValidation(toTypedSchema(props.schema), props.dependencies)
     return {
       keepValues: true,
       validationSchema: formSchema,
