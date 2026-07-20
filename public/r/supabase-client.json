@@ -1,7 +1,8 @@
 {
   "$schema": "https://shadcn-vue.com/schema/registry-item.json",
   "name": "supabase-client",
-  "type": "registry:block",
+  "title": "Supabase Client",
+  "description": "A Supabase client factory. Requires VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
   "dependencies": [
     "@supabase/supabase-js"
   ],
@@ -11,5 +12,6 @@
       "content": "import { createClient as createSupabaseClient } from '@supabase/supabase-js'\n\nexport function createClient() {\n  return createSupabaseClient(\n    import.meta.env.VITE_SUPABASE_URL!,\n    import.meta.env.VITE_SUPABASE_ANON_KEY!,\n  )\n}\n",
       "type": "registry:lib"
     }
-  ]
+  ],
+  "type": "registry:block"
 }
