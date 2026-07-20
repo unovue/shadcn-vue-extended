@@ -49,7 +49,7 @@ const itemShape = computed(() => {
   }
 })
 
-const fieldContext = useField(props.fieldName)
+const fieldContext = useField(props.fieldName, undefined, { standalone: true })
 // @ts-expect-error ignore missing `id`
 provide(FieldContextKey, fieldContext)
 </script>
