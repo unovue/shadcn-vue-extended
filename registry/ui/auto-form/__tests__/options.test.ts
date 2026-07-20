@@ -90,3 +90,122 @@ describe('autoFormFieldEnum: config.options value/label pairs (#9)', () => {
   // exercised by fields.test.ts's "zodEnum renders a select trigger" and
   // "...radio..." cases, which stay unmodified and passing.
 })
+
+// Phase 4C (#6): AutoFormFieldBoolean — checkedValue/uncheckedValue/indeterminateValue.
+describe('autoFormFieldBoolean: checked/unchecked/indeterminate values (#6)', () => {
+  it('default checkbox behavior is unchanged: toggles plain boolean true/false', async () => {
+    const schema = z.object({ flag: z.boolean() })
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, { props: { schema }, attrs: { onSubmit } })
+    await flushPromises()
+
+    await wrapper.find('[role="checkbox"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+    expect(onSubmit.mock.calls[0][0]).toEqual({ flag: true })
+
+    await wrapper.find('[role="checkbox"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+    expect(onSubmit.mock.calls[1][0]).toEqual({ flag: false })
+  })
+
+  it('default switch behavior is unchanged: toggles plain boolean and ignores checkedValue/uncheckedValue', async () => {
+    const schema = z.object({ flag: z.boolean() })
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, {
+      props: { schema, fieldConfig: { flag: { component: 'switch', checkedValue: 'yes', uncheckedValue: 'no' } } },
+      attrs: { onSubmit },
+    })
+    await flushPromises()
+
+    await wrapper.find('[role="switch"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+
+    // Switch variant ignores checkedValue/uncheckedValue — always plain boolean.
+    expect(onSubmit.mock.calls[0][0]).toEqual({ flag: true })
+  })
+
+  it('custom checkedValue/uncheckedValue submit correctly', async () => {
+    const schema = z.object({ flag: z.union([z.literal('yes'), z.literal('no')]) })
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, {
+      props: { schema, fieldConfig: { flag: { component: 'checkbox', checkedValue: 'yes', uncheckedValue: 'no' } } },
+      attrs: { onSubmit },
+    })
+    await flushPromises()
+
+    expect(wrapper.find('[role="checkbox"]').attributes('data-state')).toBe('unchecked')
+
+    await wrapper.find('[role="checkbox"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[role="checkbox"]').attributes('data-state')).toBe('checked')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+    expect(onSubmit.mock.calls[0][0]).toEqual({ flag: 'yes' })
+
+    await wrapper.find('[role="checkbox"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[role="checkbox"]').attributes('data-state')).toBe('unchecked')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+    expect(onSubmit.mock.calls[1][0]).toEqual({ flag: 'no' })
+  })
+
+  it('indeterminateValue makes the checkbox cycle checked -> unchecked -> indeterminate -> checked ...', async () => {
+    const schema = z.object({
+      flag: z.union([z.literal(true), z.literal(false), z.literal('excluded')]),
+    })
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, {
+      props: { schema, fieldConfig: { flag: { component: 'checkbox', indeterminateValue: 'excluded' } } },
+      attrs: { onSubmit },
+    })
+    await flushPromises()
+    const checkbox = () => wrapper.find('[role="checkbox"]')
+
+    expect(checkbox().attributes('data-state')).toBe('unchecked')
+
+    await checkbox().trigger('click')
+    await flushPromises()
+    expect(checkbox().attributes('data-state')).toBe('checked')
+
+    await checkbox().trigger('click')
+    await flushPromises()
+    expect(checkbox().attributes('data-state')).toBe('unchecked')
+
+    await checkbox().trigger('click')
+    await flushPromises()
+    // The indeterminate cycle reaches indeterminateValue in the model, and
+    // reka-ui's CheckboxRoot renders its own tri-state indeterminate visual
+    // (data-state="indeterminate", aria-checked="mixed") for it.
+    expect(checkbox().attributes('data-state')).toBe('indeterminate')
+    expect(checkbox().attributes('aria-checked')).toBe('mixed')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+    expect(onSubmit.mock.calls[0][0]).toEqual({ flag: 'excluded' })
+
+    await checkbox().trigger('click')
+    await flushPromises()
+    expect(checkbox().attributes('data-state')).toBe('checked')
+  })
+})
