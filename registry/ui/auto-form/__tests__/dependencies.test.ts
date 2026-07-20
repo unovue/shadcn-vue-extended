@@ -148,4 +148,49 @@ describe('useDependencies via <AutoForm dependencies>', () => {
       expect(wrapper.findAll('[data-slot="form-message"]').every(m => m.text() === '')).toBe(true)
     })
   })
+
+  // BUG(#10) regression: getSourceValue() in dependencies.ts parses dotted
+  // field paths with `.split('.').toReversed()` three times to resolve a
+  // dependency's source value relative to the target's array index (the
+  // `index >= 0 && sourceInitial.join(',') === targetInitial.join(',')`
+  // branch below). `toReversed()` is an ES2023 array method; since consumers
+  // install this file verbatim (unbundled, no polyfill guarantee), it must
+  // not appear in shipped source. Fixed by switching to in-place `.reverse()`
+  // (safe here because each call operates on a fresh array from `.split()`).
+  // This test exercises exactly that array-relative-sibling code path, which
+  // no other test in this suite reaches.
+  describe('array-relative dependency (exercises getSourceValue index path)', () => {
+    const schema = z.object({
+      items: z.array(z.object({ hasX: z.boolean(), x: z.string().optional() })),
+    })
+    const dependencies = [
+      { sourceField: 'items.hasX', targetField: 'items.x', type: DependencyType.DISABLES, when: (v: any) => v === true },
+    ]
+
+    async function expandToItemFields(wrapper: ReturnType<typeof mount>) {
+      await wrapper.find('[data-slot="accordion-trigger"]').trigger('click')
+      await flushPromises()
+      const addButton = wrapper.findAll('button').find(b => b.text().includes('Add'))!
+      await addButton.trigger('click')
+      await flushPromises()
+      const triggers = wrapper.findAll('[data-slot="accordion-trigger"]')
+      await triggers[1].trigger('click')
+      await flushPromises()
+    }
+
+    it('leaves the sibling target field enabled while the condition is unmet', async () => {
+      const wrapper = mount(AutoForm as any, { props: { schema, dependencies } })
+      await flushPromises()
+      await expandToItemFields(wrapper)
+      expect(wrapper.find('input[name="items[0].x"]').attributes('disabled')).toBeUndefined()
+    })
+
+    it('disables the sibling target field once the same-item source condition is met', async () => {
+      const wrapper = mount(AutoForm as any, { props: { schema, dependencies } })
+      await flushPromises()
+      await expandToItemFields(wrapper)
+      await toggleSource(wrapper)
+      expect(wrapper.find('input[name="items[0].x"]').attributes('disabled')).toBe('')
+    })
+  })
 })
