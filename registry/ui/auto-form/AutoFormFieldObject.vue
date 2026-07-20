@@ -12,10 +12,26 @@ import { beautifyObjectName, getBaseSchema, getBaseType, getDefaultValueInZodSta
 const props = defineProps<{
   fieldName: string
   required?: boolean
-  config?: Config<T>
+  // `config` here doubles as the ConfigItem for the object field itself
+  // (label/description) AND the nested Config<T> for its sub-fields.
+  config?: Config<T> & ConfigItem
   schema?: ZodObject<T>
   disabled?: boolean
 }>()
+
+// `config` doubles as the ConfigItem for this object field itself, so read
+// `.label`/`.description` off it directly. `schema` may be wrapped (e.g. an
+// optional sub-object), so fall back to `getBaseSchema` to reach a
+// `.describe()` set on the inner ZodObject.
+const objectConfig = computed(() => props.config as ConfigItem | undefined)
+
+const objectLabel = computed(() =>
+  objectConfig.value?.label
+  || getBaseSchema(props.schema as ZodAny)?.description
+  || beautifyObjectName(props.fieldName),
+)
+
+const objectDescription = computed(() => objectConfig.value?.description)
 
 const shapes = computed(() => {
   // @ts-expect-error ignore {} not assignable to object
@@ -57,10 +73,13 @@ provide(FieldContextKey, fieldContext)
           <AccordionItem :value="fieldName" class="border-none">
             <AccordionTrigger>
               <AutoFormLabel class="text-base" :required="required">
-                {{ schema?.description || beautifyObjectName(fieldName) }}
+                {{ objectLabel }}
               </AutoFormLabel>
             </AccordionTrigger>
             <AccordionContent class="p-1 space-y-5">
+              <p v-if="objectDescription" class="text-sm text-muted-foreground">
+                {{ objectDescription }}
+              </p>
               <template v-for="(shape, key) in shapes" :key="key">
                 <AutoFormField
                   :config="config?.[key as keyof typeof config] as ConfigItem"
