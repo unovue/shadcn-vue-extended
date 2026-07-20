@@ -1,7 +1,7 @@
 import { toTypedSchema } from '@vee-validate/zod'
 import { flushPromises, mount } from '@vue/test-utils'
 import { useForm } from 'vee-validate'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
 import { z } from 'zod'
 import { AutoForm } from '..'
@@ -30,6 +30,33 @@ describe('field type resolution (one mount per field type)', () => {
     const wrapper = mount(AutoForm as any, { props: { schema } })
     await flushPromises()
     expect(wrapper.find('input[name="age"]').attributes('type')).toBe('number')
+  })
+
+  // BUG(#8) fixed: AutoFormFieldNumber used to bind componentField straight
+  // onto <Input type="number">. DOM number inputs always emit strings via
+  // `input`/`update:modelValue`, so the form model received the string "42"
+  // instead of the number 42. AutoFormFieldNumber now coerces with
+  // Number.parseFloat (empty string -> undefined) before forwarding the
+  // update to vee-validate.
+  it('fixes BUG #8: a number input submits a real number, not a string', async () => {
+    const schema = z.object({ age: z.number() })
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, {
+      props: { schema },
+      attrs: { onSubmit },
+    })
+    await flushPromises()
+    await wrapper.find('input[name="age"]').setValue('42')
+    await flushPromises()
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await new Promise(resolve => setTimeout(resolve, 20))
+    await flushPromises()
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    const payload = onSubmit.mock.calls[0][0] as { age: number }
+    expect(payload.age).toBe(42)
+    expect(typeof payload.age).toBe('number')
   })
 
   it('zodBoolean renders a checkbox by default', async () => {
@@ -91,6 +118,25 @@ describe('field type resolution (one mount per field type)', () => {
     expect(trigger.text()).toBe('Pick a date')
   })
 
+  // BUG(#13) fixed: AutoFormFieldDate called `slotProps.componentField.modelValue.toDate(...)`
+  // directly on the form model value to render the trigger label, and spread
+  // `componentField` (whose `modelValue` is whatever the form model holds —
+  // a plain `Date` for a `z.date()` field, not a `DateValue`) straight onto
+  // <Calendar>. Both crashed with "modelValue.toDate is not a function" as
+  // soon as the field had a non-empty initial/default value. The component
+  // now bridges plain `Date`/string model values to a `DateValue` for the
+  // Calendar and back, and guards the trigger label's format call.
+  it('fixes BUG #13: a z.date() field with a default value renders without throwing', async () => {
+    const schema = z.object({ d: z.date().default(new Date('2026-01-15T00:00:00.000Z')) })
+    expect(() => mount(AutoForm as any, { props: { schema } })).not.toThrow()
+    const wrapper = mount(AutoForm as any, { props: { schema } })
+    await flushPromises()
+    const trigger = wrapper.find('[data-slot="popover-trigger"]')
+    expect(trigger.exists()).toBe(true)
+    expect(trigger.text()).not.toBe('Pick a date')
+    expect(trigger.text()).toContain('2026')
+  })
+
   it('a config.component "file" field renders a file input', async () => {
     const schema = z.object({ doc: z.any() })
     const wrapper = mount(AutoForm as any, {
@@ -115,13 +161,12 @@ describe('field type resolution (one mount per field type)', () => {
     expect(wrapper.find('input[name="address.street"]').exists()).toBe(true)
   })
 
-  // BUG(#4): AutoFormFieldObject's accordion label ONLY ever reads
-  // `schema?.description` (the sub-object's own `.describe()`), never
-  // `config?.label` from fieldConfig — and it never renders `config?.description`
-  // anywhere (no FormDescription for object fields at all, unlike every other
-  // field component). So per-field config passed for a nested object is silently
-  // ignored in both respects.
-  it('pins BUG #4: fieldConfig label/description are ignored for a ZodObject field', async () => {
+  // BUG(#4) fixed: AutoFormFieldObject's accordion label now prefers
+  // `config?.label`, falling back to the sub-object's own `.describe()`, then
+  // `beautifyObjectName(fieldName)`. `config?.description` is now rendered
+  // (FormDescription-style) inside the accordion content, matching every
+  // other field component.
+  it('fixes BUG #4: fieldConfig label/description are honored for a ZodObject field', async () => {
     const schema = z.object({
       address: z.object({ street: z.string() }).describe('an address'),
     })
@@ -132,11 +177,24 @@ describe('field type resolution (one mount per field type)', () => {
       },
     })
     await flushPromises()
-    // The schema's own .describe() wins over fieldConfig.label:
-    expect(wrapper.find('[data-slot="accordion-trigger"]').text()).toContain('an address')
-    expect(wrapper.text()).not.toContain('Custom Label')
-    // fieldConfig.description is dropped entirely — never rendered:
+    // fieldConfig.label now wins over the schema's own .describe():
+    expect(wrapper.find('[data-slot="accordion-trigger"]').text()).toContain('Custom Label')
+    expect(wrapper.find('[data-slot="accordion-trigger"]').text()).not.toContain('an address')
+    // fieldConfig.description is now rendered (inside the collapsed accordion
+    // content, so open it first):
     expect(wrapper.text()).not.toContain('Custom Desc')
+    await wrapper.find('[data-slot="accordion-trigger"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.text()).toContain('Custom Desc')
+  })
+
+  it('fixes BUG #4: falls back to schema .describe() for the label when fieldConfig.label is absent', async () => {
+    const schema = z.object({
+      address: z.object({ street: z.string() }).describe('an address'),
+    })
+    const wrapper = mount(AutoForm as any, { props: { schema } })
+    await flushPromises()
+    expect(wrapper.find('[data-slot="accordion-trigger"]').text()).toContain('an address')
   })
 
   it('zodArray renders add/remove UI and grows/shrinks the field list', async () => {
@@ -157,17 +215,44 @@ describe('field type resolution (one mount per field type)', () => {
     await flushPromises()
     expect(wrapper.findAll('input[type="text"]')).toHaveLength(2)
 
-    // Quirk observed while characterizing this control: removing the LAST
-    // item works reliably, but clicking the remove button for a non-last
-    // item (e.g. index 0 while 2 items exist) is a no-op — the field list is
-    // unchanged. Asserting the reliable (last-item) case here to keep this
-    // test deterministic; the non-last-item no-op is not one of this plan's
-    // named bugs so it is only noted, not formally pinned.
-    const removeButtons = wrapper.findAll('button').filter(b => b.find('svg.lucide-trash').exists())
-    expect(removeButtons).toHaveLength(2)
-    await removeButtons[removeButtons.length - 1].trigger('click')
+    await removeButtons(wrapper)[removeButtons(wrapper).length - 1].trigger('click')
     await flushPromises()
     expect(wrapper.findAll('input[type="text"]')).toHaveLength(1)
+  })
+
+  function removeButtons(wrapper: ReturnType<typeof mount>) {
+    return wrapper.findAll('button').filter(b => b.find('svg.lucide-trash').exists())
+  }
+
+  // BUG(#5) fixed: removing an array item used to leave a ghost entry and be
+  // a no-op for any non-last index — see the root-cause note on
+  // AutoFormFieldArray.vue's `useField(fieldName)` call. Removing index 0 of
+  // 2 must remove exactly that entry and keep the second item's value.
+  it('fixes BUG #5: removing a non-last array item removes exactly that entry and keeps the rest', async () => {
+    const schema = z.object({ tags: z.array(z.string()) })
+    const wrapper = mount(AutoForm as any, { props: { schema } })
+    await flushPromises()
+    await wrapper.find('[data-slot="accordion-trigger"]').trigger('click')
+    await flushPromises()
+
+    const addButton = wrapper.findAll('button').find(b => b.text().includes('Add'))!
+    await addButton.trigger('click')
+    await flushPromises()
+    await wrapper.findAll('input[type="text"]')[0].setValue('first')
+    await addButton.trigger('click')
+    await flushPromises()
+    await wrapper.findAll('input[type="text"]')[1].setValue('second')
+    await flushPromises()
+
+    expect(wrapper.findAll('input[type="text"]').map(i => (i.element as HTMLInputElement).value)).toEqual(['first', 'second'])
+
+    await removeButtons(wrapper)[0].trigger('click')
+    await flushPromises()
+
+    const remaining = wrapper.findAll('input[type="text"]')
+    expect(remaining).toHaveLength(1)
+    expect((remaining[0].element as HTMLInputElement).value).toBe('second')
+    expect(remaining[0].attributes('name')).toBe('tags[0]')
   })
 
   // BUG(#3): an enum nested inside an array item fails to reflect its
