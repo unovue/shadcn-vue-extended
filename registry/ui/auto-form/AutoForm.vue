@@ -8,7 +8,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { computed, toRefs } from 'vue'
 import AutoFormField from './AutoFormField.vue'
 import { provideDependencies, withDependencyValidation } from './dependencies'
-import { getBaseSchema, getBaseType, getDefaultValueInZodStack, getObjectFormSchema, isReadonlyInZodStack } from './utils'
+import { getBaseSchema, getBaseType, getDefaultValueInZodStack, getObjectFormSchema, isReadonlyInZodStack, resolveUnionRenderSchema } from './utils'
 
 const props = defineProps<{
   schema: T
@@ -38,12 +38,19 @@ const shapes = computed(() => {
     if (isReadonlyInZodStack(item))
       return
     const baseItem = getBaseSchema(item) as ZodAny
-    let options = (baseItem && 'values' in baseItem._def) ? baseItem._def.values as string[] : undefined
+    // Phase 4C (#11): a ZodUnion field renders as its first "real" member
+    // (see resolveUnionRenderSchema's JSDoc) — validation still runs against
+    // the full union via props.schema below, this only affects which
+    // component/options get picked for rendering.
+    const renderItem = (baseItem && baseItem._def.typeName === 'ZodUnion')
+      ? resolveUnionRenderSchema(baseItem as any)
+      : baseItem
+    let options = (renderItem && 'values' in renderItem._def) ? renderItem._def.values as string[] : undefined
     if (!Array.isArray(options) && typeof options === 'object')
       options = Object.values(options)
 
     val[name as keyof T] = {
-      type: getBaseType(item),
+      type: renderItem ? getBaseType(renderItem) : getBaseType(item),
       default: getDefaultValueInZodStack(item),
       options,
       required: !['ZodOptional', 'ZodNullable'].includes(item._def.typeName),

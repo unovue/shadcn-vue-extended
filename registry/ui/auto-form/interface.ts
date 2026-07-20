@@ -72,6 +72,45 @@ export interface ConfigItem {
     /** Which side of the input to render the icon on. Defaults to `'left'`. */
     position?: 'left' | 'right'
   }
+
+  // ---- Phase 4C ----
+  /**
+   * Explicit value/label pairs for an enum-rendered field (`select` or
+   * `radio` variant of `AutoFormFieldEnum`). When set, this takes
+   * precedence over the schema-derived `options` (plain strings, where the
+   * string doubles as both value and beautified label): each option's
+   * `label` is displayed and its `value` is what gets submitted. This is a
+   * rendering-only concern — the underlying zod enum/literal union must
+   * still validate against the `value`s listed here; keeping the two in
+   * sync is the consumer's responsibility.
+   */
+  options?: Array<{ value: string, label: string }>
+  /**
+   * The value submitted when an `AutoFormFieldBoolean` checkbox is checked.
+   * Defaults to `true`. Only honored by the `checkbox` variant — the
+   * `switch` variant is always a plain boolean and ignores this.
+   */
+  checkedValue?: unknown
+  /**
+   * The value submitted when an `AutoFormFieldBoolean` checkbox is
+   * unchecked. Defaults to `false`. Only honored by the `checkbox`
+   * variant — the `switch` variant is always a plain boolean and ignores
+   * this.
+   */
+  uncheckedValue?: unknown
+  /**
+   * When set, `AutoFormFieldBoolean`'s `checkbox` variant becomes a
+   * tri-state control that cycles `checkedValue` -> `uncheckedValue` ->
+   * `indeterminateValue` -> `checkedValue` ... on each click, using
+   * reka-ui's `CheckboxRoot` indeterminate visual state. Unset (the
+   * default) keeps the checkbox a plain two-state toggle. The `switch`
+   * variant ignores this — it is always a plain boolean. The schema side
+   * (validating that the field may hold `indeterminateValue`, e.g.
+   * `z.union([z.literal(true), z.literal(false), z.literal('excluded')])`)
+   * is the consumer's responsibility.
+   */
+  indeterminateValue?: unknown
+
 }
 
 // Define a type to unwrap an array

@@ -17,6 +17,16 @@ const props = defineProps<FieldProps & {
 // across the template.
 type EnumVariant = 'select' | 'radio'
 const variant = computed<EnumVariant>(() => props.config?.component === 'radio' ? 'radio' : 'select')
+
+// Phase 4C (#9): `config.options` (explicit value/label pairs) takes
+// precedence over the schema-derived `options` (plain strings, where the
+// string is both value and beautified label). Normalizing to one shape here
+// keeps both the select and radio branches option-shape-agnostic below.
+const normalizedOptions = computed(() => {
+  if (props.config?.options)
+    return props.config.options
+  return (props.options ?? []).map(option => ({ value: option, label: beautifyObjectName(option) }))
+})
 </script>
 
 <template>
@@ -24,9 +34,9 @@ const variant = computed<EnumVariant>(() => props.config?.component === 'radio' 
     <template #default="slotProps">
       <slot v-bind="slotProps">
         <RadioGroup v-if="variant === 'radio'" :disabled="maybeBooleanishToBoolean(config?.inputProps?.disabled) ?? disabled" orientation="vertical" v-bind="{ ...slotProps.componentField }">
-          <div v-for="(option, index) in options" :key="option" class="mb-2 flex items-center gap-3 space-y-0">
-            <RadioGroupItem :id="`${option}-${index}`" :value="option" />
-            <Label :for="`${option}-${index}`">{{ beautifyObjectName(option) }}</Label>
+          <div v-for="(option, index) in normalizedOptions" :key="option.value" class="mb-2 flex items-center gap-3 space-y-0">
+            <RadioGroupItem :id="`${option.value}-${index}`" :value="option.value" />
+            <Label :for="`${option.value}-${index}`">{{ option.label }}</Label>
           </div>
         </RadioGroup>
 
@@ -35,8 +45,8 @@ const variant = computed<EnumVariant>(() => props.config?.component === 'radio' 
             <SelectValue :placeholder="config?.inputProps?.placeholder" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="option in options" :key="option" :value="option">
-              {{ beautifyObjectName(option) }}
+            <SelectItem v-for="option in normalizedOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
             </SelectItem>
           </SelectContent>
         </Select>
