@@ -83,6 +83,36 @@ export function getDefaultValueInZodStack(schema: z.ZodAny): any {
   return undefined
 }
 
+/**
+ * Search the Zod wrapper stack (optionals, defaults, effects, etc.) for a
+ * `ZodReadonly` at any depth. Unlike `getBaseSchema`, this does not stop at
+ * the first unwrap — it walks the whole stack, since `.readonly()` can be
+ * layered anywhere (e.g. `z.string().readonly()` or
+ * `z.string().optional().readonly()`).
+ */
+export function isReadonlyInZodStack(schema: z.ZodAny): boolean {
+  if (!schema)
+    return false
+
+  const typedSchema = schema as unknown as z.ZodTypeAny
+
+  if (typedSchema._def.typeName === 'ZodReadonly')
+    return true
+
+  if ('innerType' in typedSchema._def) {
+    return isReadonlyInZodStack(
+      typedSchema._def.innerType as unknown as z.ZodAny,
+    )
+  }
+  if ('schema' in typedSchema._def) {
+    return isReadonlyInZodStack(
+      (typedSchema._def as any).schema as z.ZodAny,
+    )
+  }
+
+  return false
+}
+
 export function getObjectFormSchema(
   schema: ZodObjectOrWrapped,
 ): z.ZodObject<any, any> {

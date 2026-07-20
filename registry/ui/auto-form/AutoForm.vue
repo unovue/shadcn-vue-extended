@@ -8,7 +8,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { computed, toRefs } from 'vue'
 import AutoFormField from './AutoFormField.vue'
 import { provideDependencies } from './dependencies'
-import { getBaseSchema, getBaseType, getDefaultValueInZodStack, getObjectFormSchema } from './utils'
+import { getBaseSchema, getBaseType, getDefaultValueInZodStack, getObjectFormSchema, isReadonlyInZodStack } from './utils'
 
 const props = defineProps<{
   schema: T
@@ -31,6 +31,12 @@ const shapes = computed(() => {
   const shape = baseSchema.shape
   Object.keys(shape).forEach((name) => {
     const item = shape[name] as ZodAny
+    // Skip `.readonly()` fields entirely — render nothing for them, rather
+    // than silently rendering an editable control (BUG #12: getBaseSchema
+    // unwraps ZodReadonly like any other wrapper, which is why no downstream
+    // component ever knows a field was readonly).
+    if (isReadonlyInZodStack(item))
+      return
     const baseItem = getBaseSchema(item) as ZodAny
     let options = (baseItem && 'values' in baseItem._def) ? baseItem._def.values as string[] : undefined
     if (!Array.isArray(options) && typeof options === 'object')
