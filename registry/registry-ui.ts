@@ -2,6 +2,8 @@ export const ui = [
   {
     name: 'separator-label',
     type: 'registry:ui',
+    title: 'Separator Label',
+    description: 'A separator with a centered label.',
     dependencies: ['reka-ui'],
     files: [
       {
@@ -17,6 +19,8 @@ export const ui = [
   {
     name: 'auto-form',
     type: 'registry:ui',
+    title: 'Auto Form',
+    description: 'Automatically generate a form from a Zod schema, powered by vee-validate.',
     dependencies: [
       'vee-validate',
       '@vee-validate/zod',
