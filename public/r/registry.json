@@ -89,6 +89,10 @@
           "type": "registry:ui"
         },
         {
+          "path": "registry/ui/auto-form/AutoFormFieldWrapper.vue",
+          "type": "registry:ui"
+        },
+        {
           "path": "registry/ui/auto-form/AutoFormLabel.vue",
           "type": "registry:ui"
         },
