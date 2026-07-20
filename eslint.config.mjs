@@ -6,6 +6,7 @@ export default withNuxt(
     ignores: [
       'public/r/**',
       'registry.json',
+      'plans/**',
     ],
   }),
 )
