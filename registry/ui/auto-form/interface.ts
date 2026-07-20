@@ -37,7 +37,22 @@ export interface ConfigItem {
   label?: string
   /** Value for the `FormDescription` */
   description?: string
-  /** Pick which component to be rendered. */
+  /**
+   * Pick which component to be rendered. Either one of the built-in
+   * `INPUT_COMPONENTS` keys, or a custom `Component` for full control over
+   * the field's markup.
+   *
+   * Contract for a custom component: `AutoFormField.vue` mounts it in place
+   * of the built-in field and binds exactly the `FieldProps` shape —
+   * `fieldName`, `label`, `required`, `options`, `disabled`, and `config`
+   * (this same `ConfigItem`, so the custom component can read
+   * `config.inputProps`, `config.description`, etc. itself). It receives no
+   * other props. To match the built-in fields' label/description/validation
+   * message skeleton, wrap the control in `AutoFormFieldWrapper` (exported
+   * from `./index.ts`), which owns that skeleton and exposes the
+   * `vee-validate` `FormField` slot props (`componentField`, etc.) through
+   * its default slot.
+   */
   component?: keyof typeof INPUT_COMPONENTS | Component
   /** Hide `FormLabel`. */
   hideLabel?: boolean
