@@ -7,7 +7,7 @@ assignees: ''
 ---
 
 **Affected item**
-<!-- Name of the component/block, e.g. separator-label, supabase-realtime-cursor -->
+<!-- Name of the component/block, e.g. separator-label, auto-form -->
 
 **Install command used**
 <!-- e.g. npx shadcn-vue@latest add https://extended.shadcn-vue.com/r/<name>.json -->

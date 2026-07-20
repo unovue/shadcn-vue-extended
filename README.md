@@ -24,8 +24,6 @@ npx shadcn-vue@latest add https://extended.shadcn-vue.com/r/auto-form.json
 | [`auto-form`](https://extended.shadcn-vue.com/docs/components/auto-form) | ui | Auto-generate a form from a Zod schema (vee-validate + zod) |
 | [`dialog-01`](https://extended.shadcn-vue.com/blocks) | block | Dialog example block |
 | [`dialog-02`](https://extended.shadcn-vue.com/blocks) | block | Dialog example block |
-| `supabase-client` | block | Supabase client factory |
-| [`supabase-realtime-cursor`](https://extended.shadcn-vue.com/docs/blocks/supabase-realtime-cursor) | block | Real-time collaborative cursors via Supabase Realtime |
 
 ## Development
 
