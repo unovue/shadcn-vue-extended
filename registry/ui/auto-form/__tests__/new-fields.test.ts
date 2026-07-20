@@ -106,3 +106,58 @@ describe('d2: pin field (config.component "pin")', () => {
     expect(typeof payload.otp).toBe('string')
   })
 })
+
+describe('d3: input icon (config.icon)', () => {
+  it('input WITHOUT icon config renders unchanged (no icon)', async () => {
+    const schema = z.object({ email: z.string() })
+    const wrapper = mount(AutoForm as any, { props: { schema } })
+    await flushPromises()
+
+    expect(wrapper.find('input[name="email"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="field-icon"]').exists()).toBe(false)
+  })
+
+  it('input WITH icon config renders the icon component and keeps typing/submission working', async () => {
+    const IconStub = { name: 'IconStub', template: '<svg data-testid="field-icon" />' }
+    const schema = z.object({ email: z.string() })
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, {
+      props: {
+        schema,
+        fieldConfig: { email: { icon: { component: IconStub } } },
+      },
+      attrs: { onSubmit },
+    })
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="field-icon"]').exists()).toBe(true)
+
+    const input = wrapper.find('input[name="email"]')
+    await input.setValue('ada@example.com')
+    await flushPromises()
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await new Promise(resolve => setTimeout(resolve, 20))
+    await flushPromises()
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    const payload = onSubmit.mock.calls[0][0] as { email: string }
+    expect(payload.email).toBe('ada@example.com')
+  })
+
+  it('honors config.icon.position "right"', async () => {
+    const IconStub = { name: 'IconStub', template: '<svg data-testid="field-icon" />' }
+    const schema = z.object({ email: z.string() })
+    const wrapper = mount(AutoForm as any, {
+      props: {
+        schema,
+        fieldConfig: { email: { icon: { component: IconStub, position: 'right' } } },
+      },
+    })
+    await flushPromises()
+
+    const icon = wrapper.find('[data-testid="field-icon"]')
+    expect(icon.exists()).toBe(true)
+    expect(icon.classes().join(' ')).toContain('right')
+  })
+})

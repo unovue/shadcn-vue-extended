@@ -60,6 +60,18 @@ export interface ConfigItem {
   /** Hide `FormLabel`. */
   hideLabel?: boolean
   inputProps?: InputHTMLAttributes
+  // Phase 4D
+  /**
+   * Render an icon inside `AutoFormFieldInput`'s control. Wraps the `Input`
+   * in a `relative` container and adds left/right padding so the icon
+   * doesn't overlap typed text. No-op for every other field component.
+   */
+  icon?: {
+    /** The icon component to render, e.g. a `lucide-vue-next` icon. */
+    component: Component
+    /** Which side of the input to render the icon on. Defaults to `'left'`. */
+    position?: 'left' | 'right'
+  }
 }
 
 // Define a type to unwrap an array
