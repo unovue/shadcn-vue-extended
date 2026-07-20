@@ -11,7 +11,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build:registry": "tsx ./scripts/build-registry.ts"
+    "build:registry": "tsx ./scripts/build-registry.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@internationalized/date": "^3.12.2",
