@@ -113,6 +113,33 @@ export function isReadonlyInZodStack(schema: z.ZodAny): boolean {
   return false
 }
 
+/**
+ * Phase 4C (#11): a `ZodUnion` field used to render nothing — `getBaseSchema`
+ * stops at `ZodUnion` (it only unwraps wrappers that carry an `innerType` or
+ * `schema` in `_def`), so `getBaseType` yielded `'ZodUnion'`, which has no
+ * `DEFAULT_ZOD_HANDLERS` entry. Validation must stay against the *full*
+ * union (the consumer's schema still enforces every member — e.g.
+ * `z.union([z.literal(''), z.string().email().optional()])` must keep
+ * accepting both `''` and a valid email), but *rendering* has to commit to
+ * one shape.
+ *
+ * This picks the first union member that isn't just a literal/undefined/null
+ * placeholder (those carry no renderable "type" of their own — e.g. the
+ * `z.literal('')` escape hatch in the case above) and unwraps *that
+ * member's own* wrapper stack (optional, nullable, effects, etc.) via
+ * `getBaseSchema`. Falls back to the first member (also unwrapped) if every
+ * member is a literal/undefined/null.
+ */
+export function resolveUnionRenderSchema(schema: z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>): z.ZodAny {
+  const members = schema._def.options as z.ZodAny[]
+  const isPlaceholder = (member: z.ZodAny) => {
+    const typeName = getBaseSchema(member)?._def.typeName
+    return typeName === 'ZodLiteral' || typeName === 'ZodUndefined' || typeName === 'ZodNull'
+  }
+  const renderMember = members.find(member => !isPlaceholder(member)) ?? members[0]
+  return getBaseSchema(renderMember) ?? renderMember
+}
+
 export function getObjectFormSchema(
   schema: ZodObjectOrWrapped,
 ): z.ZodObject<any, any> {

@@ -209,3 +209,78 @@ describe('autoFormFieldBoolean: checked/unchecked/indeterminate values (#6)', ()
     expect(checkbox().attributes('data-state')).toBe('checked')
   })
 })
+
+// Phase 4C (#11): z.union() rendering.
+describe('z.union() rendering (#11)', () => {
+  // The issue's canonical case: an optional-email escape hatch modeled as a
+  // union so '' is explicitly a valid value alongside a real (validated)
+  // email, rather than relying on .optional() alone.
+  const schema = z.object({
+    email: z.union([z.literal(''), z.string().email().optional()]),
+  })
+
+  it('renders a string input instead of nothing', async () => {
+    const wrapper = mount(AutoForm as any, { props: { schema } })
+    await flushPromises()
+    const input = wrapper.find('input[name="email"]')
+    expect(input.exists()).toBe(true)
+  })
+
+  it('accepts an explicit empty string on submit', async () => {
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, { props: { schema }, attrs: { onSubmit } })
+    await flushPromises()
+
+    await wrapper.find('input[name="email"]').setValue('a@b.com')
+    await wrapper.find('input[name="email"]').setValue('')
+    await flushPromises()
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(onSubmit.mock.calls[0][0]).toEqual({ email: '' })
+  })
+
+  it('accepts a valid email on submit', async () => {
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, { props: { schema }, attrs: { onSubmit } })
+    await flushPromises()
+
+    await wrapper.find('input[name="email"]').setValue('a@b.com')
+    await flushPromises()
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(onSubmit.mock.calls[0][0]).toEqual({ email: 'a@b.com' })
+  })
+
+  it('rejects an invalid (non-empty, non-email) value with a validation error', async () => {
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, { props: { schema }, attrs: { onSubmit } })
+    await flushPromises()
+
+    await wrapper.find('input[name="email"]').setValue('not-an-email')
+    await flushPromises()
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wait()
+    await flushPromises()
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    const messages = wrapper.findAll('[data-slot="form-message"]').map(m => m.text())
+    expect(messages.some(text => text.length > 0)).toBe(true)
+  })
+
+  it('union-of-enum renders the enum options', async () => {
+    const enumSchema = z.object({ color: z.union([z.literal(''), z.enum(['red', 'green'])]) })
+    const wrapper = mount(AutoForm as any, { props: { schema: enumSchema } })
+    await flushPromises()
+    const values = wrapper.findAll('select[name="color"] option').map(o => o.attributes('value'))
+    expect(values).toEqual(['', 'red', 'green'])
+  })
+})
