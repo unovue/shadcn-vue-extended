@@ -10,6 +10,7 @@ import {
   getIndexIfArray,
   getObjectFormSchema,
   isNotNestedPath,
+  isReadonlyInZodStack,
   maybeBooleanishToBoolean,
   normalizeFormPath,
 } from '../utils'
@@ -121,15 +122,37 @@ describe('getBaseSchema / getBaseType', () => {
     expect(getDefaultValueInZodStack(schema as any)).toBe('green')
   })
 
-  // BUG(#12): .readonly() unwraps cleanly to the inner schema/type at the
-  // utils layer — nothing in getBaseSchema/getBaseType is aware of
-  // ZodReadonly, which is exactly why no component downstream ever disables
-  // the rendered control (see fields.test.ts).
+  // getBaseSchema/getBaseType still unwrap .readonly() cleanly to the inner
+  // schema/type — that part is correct and unchanged by the BUG(#12) fix.
+  // ZodReadonly-awareness for the fix instead lives in the dedicated
+  // `isReadonlyInZodStack` helper below, which AutoForm.vue's shape loop
+  // uses to skip readonly fields entirely (see fields.test.ts FIXED #12).
   it('unwraps .readonly() down to the inner type', () => {
     const schema = z.string().readonly()
     expect(schema._def.typeName).toBe('ZodReadonly')
     expect(getBaseType(schema as any)).toBe('ZodString')
     expect(getBaseSchema(schema as any) instanceof z.ZodString).toBe(true)
+  })
+})
+
+describe('isReadonlyInZodStack', () => {
+  it('returns false when there is no ZodReadonly in the stack', () => {
+    expect(isReadonlyInZodStack(z.string() as any)).toBe(false)
+    expect(isReadonlyInZodStack(z.string().optional() as any)).toBe(false)
+  })
+
+  it('detects a top-level .readonly()', () => {
+    expect(isReadonlyInZodStack(z.string().readonly() as any)).toBe(true)
+  })
+
+  it('detects .readonly() layered under .optional()', () => {
+    expect(isReadonlyInZodStack(z.string().optional().readonly() as any)).toBe(true)
+  })
+
+  it('detects .readonly() layered under a ZodEffects (e.g. .describe())', () => {
+    // .readonly() applied before another wrapper still needs to be found
+    // when walking back down through `innerType`/`schema` def keys.
+    expect(isReadonlyInZodStack(z.string().readonly().optional() as any)).toBe(true)
   })
 })
 
