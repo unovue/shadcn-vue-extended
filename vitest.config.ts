@@ -11,5 +11,6 @@ export default defineConfig({
   },
   test: {
     environment: 'happy-dom',
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.{git,nuxt,output,claude}/**'],
   },
 })
