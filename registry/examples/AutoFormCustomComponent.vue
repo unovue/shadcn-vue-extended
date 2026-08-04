@@ -16,19 +16,35 @@ const StarRatingField = defineComponent({
   props: ['fieldName', 'label', 'required', 'options', 'disabled', 'config'],
   setup(props) {
     return () => h(AutoFormFieldWrapper, { ...props }, {
+      // Each star is a real <button>, not a bare clickable SVG: native
+      // buttons are focusable and handle Enter/Space for free, and they
+      // honor `disabled`. The icon itself is aria-hidden, so the accessible
+      // name comes from the button's aria-label rather than the graphic.
       default: (slotProps: any) => h(
         'div',
-        { class: 'flex gap-1' },
-        [1, 2, 3, 4, 5].map(value => h(StarIcon, {
-          key: value,
-          class: [
-            'size-6 cursor-pointer transition-colors',
-            (slotProps.componentField.modelValue ?? 0) >= value
-              ? 'fill-yellow-400 text-yellow-400'
-              : 'text-muted-foreground',
-          ],
-          onClick: () => slotProps.componentField['onUpdate:modelValue'](value),
-        })),
+        { 'class': 'flex gap-1', 'role': 'group', 'aria-label': 'Rating' },
+        [1, 2, 3, 4, 5].map((value) => {
+          const selected = (slotProps.componentField.modelValue ?? 0) >= value
+          return h(
+            'button',
+            {
+              'key': value,
+              'type': 'button',
+              'disabled': props.disabled,
+              'aria-label': `${value} star${value === 1 ? '' : 's'}`,
+              'aria-pressed': selected,
+              'class': 'rounded-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+              'onClick': () => slotProps.componentField['onUpdate:modelValue'](value),
+            },
+            h(StarIcon, {
+              'aria-hidden': 'true',
+              'class': [
+                'size-6 transition-colors',
+                selected ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground',
+              ],
+            }),
+          )
+        }),
       ),
     })
   },
