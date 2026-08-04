@@ -1,36 +1,42 @@
 <script setup lang="ts">
 import type { FieldProps } from './interface'
-import { FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { computed } from 'vue'
-import AutoFormLabel from './AutoFormLabel.vue'
-import { beautifyObjectName } from './utils'
+import AutoFormFieldWrapper from './AutoFormFieldWrapper.vue'
 
 const props = defineProps<FieldProps>()
 const inputComponent = computed(() => props.config?.component === 'textarea' ? Textarea : Input)
+// Phase 4D: opt-in icon decoration, see ConfigItem.icon in interface.ts.
+const iconPosition = computed(() => props.config?.icon?.position ?? 'left')
 </script>
 
 <template>
-  <FormField v-slot="slotProps" :name="fieldName">
-    <FormItem v-bind="$attrs">
-      <AutoFormLabel v-if="!config?.hideLabel" :required="required">
-        {{ config?.label || beautifyObjectName(label ?? fieldName) }}
-      </AutoFormLabel>
-      <FormControl>
-        <slot v-bind="slotProps">
+  <AutoFormFieldWrapper v-bind="props">
+    <template #default="slotProps">
+      <slot v-bind="slotProps">
+        <div v-if="config?.icon" class="relative">
+          <component
+            :is="config.icon.component"
+            class="absolute top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            :class="iconPosition === 'right' ? 'right-3' : 'left-3'"
+          />
           <component
             :is="inputComponent"
             type="text"
             v-bind="{ ...slotProps.componentField, ...config?.inputProps }"
+            :class="iconPosition === 'right' ? 'pr-9' : 'pl-9'"
             :disabled="config?.inputProps?.disabled ?? disabled"
           />
-        </slot>
-      </FormControl>
-      <FormDescription v-if="config?.description">
-        {{ config.description }}
-      </FormDescription>
-      <FormMessage />
-    </FormItem>
-  </FormField>
+        </div>
+        <component
+          :is="inputComponent"
+          v-else
+          type="text"
+          v-bind="{ ...slotProps.componentField, ...config?.inputProps }"
+          :disabled="config?.inputProps?.disabled ?? disabled"
+        />
+      </slot>
+    </template>
+  </AutoFormFieldWrapper>
 </template>

@@ -4,13 +4,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Button } from '@/components/ui/button'
 import { FormItem, FormMessage } from '@/components/ui/form'
 import { Separator } from '@/components/ui/separator'
-import { PlusIcon, TrashIcon } from 'lucide-vue-next'
+import { PlusIcon, TrashIcon } from '@lucide/vue'
 import { FieldArray, FieldContextKey, useField } from 'vee-validate'
 import { computed, provide } from 'vue'
 import * as z from 'zod'
 import AutoFormField from './AutoFormField.vue'
 import AutoFormLabel from './AutoFormLabel.vue'
-import { beautifyObjectName, getBaseType } from './utils'
+import { beautifyObjectName, getBaseType, getRenderSchema, getSchemaOptions } from './utils'
 
 const props = defineProps<{
   fieldName: string
@@ -43,13 +43,22 @@ const itemShape = computed(() => {
       ? props.schema._def.innerType._def.type
       : null
 
+  // Shares AutoForm.vue's resolution helpers so an array *item* gets the same
+  // treatment as any other field: unions render as their first meaningful
+  // member (#11), and enum options are pulled off the unwrapped schema (#3 —
+  // without this an enum inside an array item renders no options at all).
+  // `required`/`default` are deliberately left off: an item's required-ness is
+  // the array's concern, not the item's.
+  const renderItem = getRenderSchema(schema)
+
   return {
-    type: getBaseType(schema),
+    type: renderItem ? getBaseType(renderItem) : getBaseType(schema),
     schema,
+    options: getSchemaOptions(renderItem),
   }
 })
 
-const fieldContext = useField(props.fieldName)
+const fieldContext = useField(props.fieldName, undefined, { standalone: true })
 // @ts-expect-error ignore missing `id`
 provide(FieldContextKey, fieldContext)
 </script>

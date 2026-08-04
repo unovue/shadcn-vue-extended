@@ -30,7 +30,8 @@
         "vee-validate",
         "@vee-validate/zod",
         "zod",
-        "reka-ui"
+        "reka-ui",
+        "@lucide/vue"
       ],
       "registryDependencies": [
         "form",
@@ -45,7 +46,9 @@
         "radio-group",
         "select",
         "input",
-        "textarea"
+        "textarea",
+        "tags-input",
+        "pin-input"
       ],
       "files": [
         {
@@ -89,6 +92,18 @@
           "type": "registry:ui"
         },
         {
+          "path": "registry/ui/auto-form/AutoFormFieldPin.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldTags.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/auto-form/AutoFormFieldWrapper.vue",
+          "type": "registry:ui"
+        },
+        {
           "path": "registry/ui/auto-form/AutoFormLabel.vue",
           "type": "registry:ui"
         },
@@ -120,7 +135,7 @@
       "title": "Dialog 01",
       "description": "A dialog block example.",
       "dependencies": [
-        "lucide-vue-next"
+        "@lucide/vue"
       ],
       "registryDependencies": [
         "button",
@@ -139,7 +154,7 @@
       "title": "Dialog 02",
       "description": "A dialog block example.",
       "dependencies": [
-        "lucide-vue-next"
+        "@lucide/vue"
       ],
       "registryDependencies": [
         "button",

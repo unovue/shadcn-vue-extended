@@ -5,11 +5,19 @@ on:
   push:
     branches: [main]
 
+# Every job here only reads the repo — none publish, comment, or push. Setting
+# this at the workflow level (rather than per job) keeps new jobs read-only by
+# default instead of silently inheriting the token's write scopes.
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: pnpm/action-setup@v4 # reads version from packageManager field
       - uses: actions/setup-node@v4
         with:
@@ -18,10 +26,26 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4 # reads version from packageManager field
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+
   registry:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -41,6 +65,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:

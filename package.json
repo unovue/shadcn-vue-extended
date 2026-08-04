@@ -11,9 +11,12 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build:registry": "tsx ./scripts/build-registry.ts"
+    "build:registry": "tsx ./scripts/build-registry.ts",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@internationalized/date": "^3.12.2",
+    "@lucide/vue": "^1.25.0",
     "@nuxt/content": "3.15.2",
     "@nuxt/eslint": "1.16.0",
     "@nuxt/fonts": "0.14.0",
@@ -27,7 +30,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "eslint": "^9.39.5",
-    "lucide-vue-next": "^0.487.0",
     "nuxt": "^4.5.1",
     "reka-ui": "^2.10.1",
     "shadcn-nuxt": "2.8.1",
@@ -45,13 +47,17 @@
     "@iconify-json/lucide": "^1.2.35",
     "@nuxtjs/mdc": "^0.22.2",
     "@types/node": "^22.14.0",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.4.11",
     "better-sqlite3": "^12.5.0",
+    "happy-dom": "^20.11.0",
     "pathe": "^2.0.3",
     "rimraf": "^6.0.1",
     "shiki": "^3.2.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
     "unist-util-visit": "^5.0.0",
+    "vitest": "^4.1.10",
     "vue-component-meta": "^2.2.8",
     "zod": "^3.24.2"
   }

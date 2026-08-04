@@ -7,8 +7,8 @@ import { Form } from '@/components/ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import { computed, toRefs } from 'vue'
 import AutoFormField from './AutoFormField.vue'
-import { provideDependencies } from './dependencies'
-import { getBaseSchema, getBaseType, getDefaultValueInZodStack, getObjectFormSchema } from './utils'
+import { provideDependencies, withDependencyValidation } from './dependencies'
+import { buildShape, getObjectFormSchema } from './utils'
 
 const props = defineProps<{
   schema: T
@@ -30,19 +30,13 @@ const shapes = computed(() => {
   const baseSchema = getObjectFormSchema(props.schema)
   const shape = baseSchema.shape
   Object.keys(shape).forEach((name) => {
-    const item = shape[name] as ZodAny
-    const baseItem = getBaseSchema(item) as ZodAny
-    let options = (baseItem && 'values' in baseItem._def) ? baseItem._def.values as string[] : undefined
-    if (!Array.isArray(options) && typeof options === 'object')
-      options = Object.values(options)
-
-    val[name as keyof T] = {
-      type: getBaseType(item),
-      default: getDefaultValueInZodStack(item),
-      options,
-      required: !['ZodOptional', 'ZodNullable'].includes(item._def.typeName),
-      schema: baseItem,
-    }
+    // `buildShape` returns null for a `.readonly()` field (BUG #12) — render
+    // nothing for it rather than an editable control. It also resolves union
+    // rendering (#11) and enum options (#3); see its JSDoc.
+    const itemShape = buildShape(shape[name] as ZodAny)
+    if (!itemShape)
+      return
+    val[name as keyof T] = itemShape
   })
   return val
 })
@@ -69,7 +63,11 @@ const formComponentProps = computed(() => {
     }
   }
   else {
-    const formSchema = toTypedSchema(props.schema)
+    // Layer REQUIRES-dependency validation onto the typed schema without
+    // touching `props.schema` itself — `cast()`/`describe()` must keep
+    // reading the original schema so default-value extraction is unaffected
+    // (see NOTES in dependencies.ts).
+    const formSchema = withDependencyValidation(toTypedSchema(props.schema), props.dependencies)
     return {
       keepValues: true,
       validationSchema: formSchema,

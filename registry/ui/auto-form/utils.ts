@@ -1,4 +1,5 @@
 import type { z } from 'zod'
+import type { Shape } from './interface'
 
 // TODO: This should support recursive ZodEffects but TypeScript doesn't allow circular type definitions.
 export type ZodObjectOrWrapped =
@@ -81,6 +82,117 @@ export function getDefaultValueInZodStack(schema: z.ZodAny): any {
   }
 
   return undefined
+}
+
+/**
+ * Search the Zod wrapper stack (optionals, defaults, effects, etc.) for a
+ * `ZodReadonly` at any depth. Unlike `getBaseSchema`, this does not stop at
+ * the first unwrap — it walks the whole stack, since `.readonly()` can be
+ * layered anywhere (e.g. `z.string().readonly()` or
+ * `z.string().optional().readonly()`).
+ */
+export function isReadonlyInZodStack(schema: z.ZodAny): boolean {
+  if (!schema)
+    return false
+
+  const typedSchema = schema as unknown as z.ZodTypeAny
+
+  if (typedSchema._def.typeName === 'ZodReadonly')
+    return true
+
+  if ('innerType' in typedSchema._def) {
+    return isReadonlyInZodStack(
+      typedSchema._def.innerType as unknown as z.ZodAny,
+    )
+  }
+  if ('schema' in typedSchema._def) {
+    return isReadonlyInZodStack(
+      (typedSchema._def as any).schema as z.ZodAny,
+    )
+  }
+
+  return false
+}
+
+/**
+ * Phase 4C (#11): a `ZodUnion` field used to render nothing — `getBaseSchema`
+ * stops at `ZodUnion` (it only unwraps wrappers that carry an `innerType` or
+ * `schema` in `_def`), so `getBaseType` yielded `'ZodUnion'`, which has no
+ * `DEFAULT_ZOD_HANDLERS` entry. Validation must stay against the *full*
+ * union (the consumer's schema still enforces every member — e.g.
+ * `z.union([z.literal(''), z.string().email().optional()])` must keep
+ * accepting both `''` and a valid email), but *rendering* has to commit to
+ * one shape.
+ *
+ * This picks the first union member that isn't just a literal/undefined/null
+ * placeholder (those carry no renderable "type" of their own — e.g. the
+ * `z.literal('')` escape hatch in the case above) and unwraps *that
+ * member's own* wrapper stack (optional, nullable, effects, etc.) via
+ * `getBaseSchema`. Falls back to the first member (also unwrapped) if every
+ * member is a literal/undefined/null.
+ */
+export function resolveUnionRenderSchema(schema: z.ZodUnion<[z.ZodTypeAny, ...z.ZodTypeAny[]]>): z.ZodAny {
+  const members = schema._def.options as z.ZodAny[]
+  const isPlaceholder = (member: z.ZodAny) => {
+    const typeName = getBaseSchema(member)?._def.typeName
+    return typeName === 'ZodLiteral' || typeName === 'ZodUndefined' || typeName === 'ZodNull'
+  }
+  const renderMember = members.find(member => !isPlaceholder(member)) ?? members[0]
+  return getBaseSchema(renderMember) ?? renderMember
+}
+
+/**
+ * The schema a field should *render* as: the unwrapped base schema, except
+ * for a `ZodUnion`, which commits to one member (see
+ * `resolveUnionRenderSchema`). Validation always stays against the original,
+ * fully-wrapped schema — this only decides which component gets picked.
+ */
+export function getRenderSchema(schema: z.ZodAny): z.ZodAny | null {
+  const baseSchema = getBaseSchema(schema)
+  if (baseSchema && baseSchema._def.typeName === 'ZodUnion')
+    return resolveUnionRenderSchema(baseSchema as any)
+  return baseSchema
+}
+
+/**
+ * Enum options off a render schema. `ZodEnum` carries an array in
+ * `_def.values`; `ZodNativeEnum` carries an object map that needs
+ * `Object.values()`.
+ */
+export function getSchemaOptions(renderSchema: z.ZodAny | null | undefined): string[] | undefined {
+  const values = (renderSchema && 'values' in renderSchema._def) ? renderSchema._def.values as string[] : undefined
+  if (values && !Array.isArray(values) && typeof values === 'object')
+    return Object.values(values)
+  return values
+}
+
+/**
+ * Builds the `Shape` descriptor `AutoFormField` dispatches on, for one entry
+ * of a `ZodObject`'s shape. Returns `null` for a `.readonly()` field, which
+ * must render nothing at all rather than an editable control (#12).
+ *
+ * Shared by `AutoForm.vue` and `AutoFormFieldObject.vue` so that readonly
+ * skipping, union rendering (#11) and enum option extraction (#3) behave
+ * identically at every nesting level — they previously drifted because each
+ * component hand-rolled its own copy of this loop body.
+ */
+export function buildShape(item: z.ZodAny): Shape | null {
+  if (isReadonlyInZodStack(item))
+    return null
+
+  const renderItem = getRenderSchema(item)
+
+  return {
+    type: renderItem ? getBaseType(renderItem) : getBaseType(item),
+    default: getDefaultValueInZodStack(item),
+    options: getSchemaOptions(renderItem),
+    required: !['ZodOptional', 'ZodNullable'].includes(item._def.typeName),
+    // The *unwrapped* schema, so that `AutoFormField`'s `shape.schema.description`
+    // reads a `.describe()` set on the inner type, and so a wrapped container
+    // (e.g. `z.array(...).optional()`) still reaches `AutoFormFieldArray` as a
+    // `ZodArray` it can destructure.
+    schema: getBaseSchema(item),
+  }
 }
 
 export function getObjectFormSchema(
@@ -183,6 +295,18 @@ export function booleanishToBoolean(value: Booleanish) {
   }
 }
 
+/**
+ * Narrows an optional `Booleanish` to a `boolean`, preserving the
+ * absent/present distinction: only `undefined` yields `undefined`.
+ *
+ * The test must be `value === undefined`, not `value ?`, because callers use
+ * the result as `maybeBooleanishToBoolean(config?.inputProps?.disabled) ??
+ * disabled` — a truthiness test collapses an explicit `false` into "not
+ * provided", so `inputProps.disabled = false` fell through to the outer
+ * `disabled` prop and could never override a dependency-driven disable.
+ * (The string `'false'` was unaffected, which is what made the asymmetry
+ * easy to miss.)
+ */
 export function maybeBooleanishToBoolean(value?: Booleanish) {
-  return value ? booleanishToBoolean(value) : undefined
+  return value === undefined ? undefined : booleanishToBoolean(value)
 }
