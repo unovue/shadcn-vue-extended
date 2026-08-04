@@ -283,4 +283,19 @@ describe('z.union() rendering (#11)', () => {
     const values = wrapper.findAll('select[name="color"] option').map(o => o.attributes('value'))
     expect(values).toEqual(['', 'red', 'green'])
   })
+
+  // Union resolution originally lived only in AutoForm.vue's own shape loop,
+  // so a union nested inside a ZodObject fell back to `getBaseType() ===
+  // 'ZodUnion'`, which has no DEFAULT_ZOD_HANDLERS entry and rendered
+  // nothing at all. Both loops now share utils.ts's `buildShape`.
+  it('renders a union nested inside a ZodObject', async () => {
+    const nested = z.object({
+      contact: z.object({ email: z.union([z.literal(''), z.string().email().optional()]) }),
+    })
+    const wrapper = mount(AutoForm as any, { props: { schema: nested } })
+    await flushPromises()
+    await wrapper.find('[data-slot="accordion-trigger"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('input[name="contact.email"]').exists()).toBe(true)
+  })
 })

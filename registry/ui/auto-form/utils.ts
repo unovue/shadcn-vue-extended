@@ -1,4 +1,5 @@
 import type { z } from 'zod'
+import type { Shape } from './interface'
 
 // TODO: This should support recursive ZodEffects but TypeScript doesn't allow circular type definitions.
 export type ZodObjectOrWrapped =
@@ -138,6 +139,60 @@ export function resolveUnionRenderSchema(schema: z.ZodUnion<[z.ZodTypeAny, ...z.
   }
   const renderMember = members.find(member => !isPlaceholder(member)) ?? members[0]
   return getBaseSchema(renderMember) ?? renderMember
+}
+
+/**
+ * The schema a field should *render* as: the unwrapped base schema, except
+ * for a `ZodUnion`, which commits to one member (see
+ * `resolveUnionRenderSchema`). Validation always stays against the original,
+ * fully-wrapped schema — this only decides which component gets picked.
+ */
+export function getRenderSchema(schema: z.ZodAny): z.ZodAny | null {
+  const baseSchema = getBaseSchema(schema)
+  if (baseSchema && baseSchema._def.typeName === 'ZodUnion')
+    return resolveUnionRenderSchema(baseSchema as any)
+  return baseSchema
+}
+
+/**
+ * Enum options off a render schema. `ZodEnum` carries an array in
+ * `_def.values`; `ZodNativeEnum` carries an object map that needs
+ * `Object.values()`.
+ */
+export function getSchemaOptions(renderSchema: z.ZodAny | null | undefined): string[] | undefined {
+  const values = (renderSchema && 'values' in renderSchema._def) ? renderSchema._def.values as string[] : undefined
+  if (values && !Array.isArray(values) && typeof values === 'object')
+    return Object.values(values)
+  return values
+}
+
+/**
+ * Builds the `Shape` descriptor `AutoFormField` dispatches on, for one entry
+ * of a `ZodObject`'s shape. Returns `null` for a `.readonly()` field, which
+ * must render nothing at all rather than an editable control (#12).
+ *
+ * Shared by `AutoForm.vue` and `AutoFormFieldObject.vue` so that readonly
+ * skipping, union rendering (#11) and enum option extraction (#3) behave
+ * identically at every nesting level — they previously drifted because each
+ * component hand-rolled its own copy of this loop body.
+ */
+export function buildShape(item: z.ZodAny): Shape | null {
+  if (isReadonlyInZodStack(item))
+    return null
+
+  const renderItem = getRenderSchema(item)
+
+  return {
+    type: renderItem ? getBaseType(renderItem) : getBaseType(item),
+    default: getDefaultValueInZodStack(item),
+    options: getSchemaOptions(renderItem),
+    required: !['ZodOptional', 'ZodNullable'].includes(item._def.typeName),
+    // The *unwrapped* schema, so that `AutoFormField`'s `shape.schema.description`
+    // reads a `.describe()` set on the inner type, and so a wrapped container
+    // (e.g. `z.array(...).optional()`) still reaches `AutoFormFieldArray` as a
+    // `ZodArray` it can destructure.
+    schema: getBaseSchema(item),
+  }
 }
 
 export function getObjectFormSchema(

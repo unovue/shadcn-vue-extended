@@ -310,4 +310,21 @@ describe('field type resolution (one mount per field type)', () => {
     // sibling fields are unaffected
     expect(wrapper.find('input[name="name"]').exists()).toBe(true)
   })
+
+  // The #12 fix originally lived only in AutoForm.vue's own shape loop, so a
+  // readonly field nested inside a ZodObject still rendered an editable
+  // control — the exact behavior the issue is about. Both loops now share
+  // utils.ts's `buildShape`.
+  it('fixes BUG #12 for a nested field too: .readonly() inside a ZodObject is skipped', async () => {
+    const schema = z.object({
+      user: z.object({ id: z.string().readonly(), name: z.string() }),
+    })
+    const wrapper = mount(AutoForm as any, { props: { schema } })
+    await flushPromises()
+    await wrapper.find('[data-slot="accordion-trigger"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('input[name="user.id"]').exists()).toBe(false)
+    // sibling fields inside the same object are unaffected
+    expect(wrapper.find('input[name="user.name"]').exists()).toBe(true)
+  })
 })

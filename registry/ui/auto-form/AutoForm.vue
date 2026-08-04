@@ -8,7 +8,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { computed, toRefs } from 'vue'
 import AutoFormField from './AutoFormField.vue'
 import { provideDependencies, withDependencyValidation } from './dependencies'
-import { getBaseSchema, getBaseType, getDefaultValueInZodStack, getObjectFormSchema, isReadonlyInZodStack, resolveUnionRenderSchema } from './utils'
+import { buildShape, getObjectFormSchema } from './utils'
 
 const props = defineProps<{
   schema: T
@@ -30,32 +30,13 @@ const shapes = computed(() => {
   const baseSchema = getObjectFormSchema(props.schema)
   const shape = baseSchema.shape
   Object.keys(shape).forEach((name) => {
-    const item = shape[name] as ZodAny
-    // Skip `.readonly()` fields entirely — render nothing for them, rather
-    // than silently rendering an editable control (BUG #12: getBaseSchema
-    // unwraps ZodReadonly like any other wrapper, which is why no downstream
-    // component ever knows a field was readonly).
-    if (isReadonlyInZodStack(item))
+    // `buildShape` returns null for a `.readonly()` field (BUG #12) — render
+    // nothing for it rather than an editable control. It also resolves union
+    // rendering (#11) and enum options (#3); see its JSDoc.
+    const itemShape = buildShape(shape[name] as ZodAny)
+    if (!itemShape)
       return
-    const baseItem = getBaseSchema(item) as ZodAny
-    // Phase 4C (#11): a ZodUnion field renders as its first "real" member
-    // (see resolveUnionRenderSchema's JSDoc) — validation still runs against
-    // the full union via props.schema below, this only affects which
-    // component/options get picked for rendering.
-    const renderItem = (baseItem && baseItem._def.typeName === 'ZodUnion')
-      ? resolveUnionRenderSchema(baseItem as any)
-      : baseItem
-    let options = (renderItem && 'values' in renderItem._def) ? renderItem._def.values as string[] : undefined
-    if (!Array.isArray(options) && typeof options === 'object')
-      options = Object.values(options)
-
-    val[name as keyof T] = {
-      type: renderItem ? getBaseType(renderItem) : getBaseType(item),
-      default: getDefaultValueInZodStack(item),
-      options,
-      required: !['ZodOptional', 'ZodNullable'].includes(item._def.typeName),
-      schema: baseItem,
-    }
+    val[name as keyof T] = itemShape
   })
   return val
 })
