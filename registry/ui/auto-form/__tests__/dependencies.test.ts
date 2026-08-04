@@ -40,6 +40,29 @@ describe('useDependencies via <AutoForm dependencies>', () => {
       await toggleSource(wrapper)
       expect(wrapper.find('input[name="x"]').attributes('disabled')).toBe('')
     })
+
+    // The fields that route `disabled` through `maybeBooleanishToBoolean`
+    // (boolean/date/enum) read it as `maybeBooleanishToBoolean(...) ??
+    // disabled`. While that helper collapsed a literal `false` to
+    // `undefined`, an explicit `inputProps.disabled = false` fell through to
+    // the dependency-driven `disabled` and could never win.
+    it('honors an explicit inputProps.disabled=false over an active DISABLES dependency', async () => {
+      const boolSchema = z.object({ hasX: z.boolean(), flag: z.boolean() })
+      const boolDeps = [
+        { sourceField: 'hasX', targetField: 'flag', type: DependencyType.DISABLES, when: (v: any) => v === true },
+      ]
+      const wrapper = mount(AutoForm as any, {
+        props: {
+          schema: boolSchema,
+          dependencies: boolDeps,
+          fieldConfig: { flag: { inputProps: { disabled: false } } },
+        },
+      })
+      await flushPromises()
+      await toggleSource(wrapper)
+      const target = wrapper.findAll('[role="checkbox"]')[1]
+      expect(target.attributes('data-disabled')).toBeUndefined()
+    })
   })
 
   describe('dependencyType.HIDES', () => {

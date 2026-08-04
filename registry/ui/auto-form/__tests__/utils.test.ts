@@ -246,11 +246,18 @@ describe('booleanishToBoolean / maybeBooleanishToBoolean', () => {
     expect(maybeBooleanishToBoolean('false')).toBe(false)
   })
 
-  // Quirk: the `value ? ... : undefined` guard treats a literal boolean
-  // `false` as falsy, so it short-circuits to undefined instead of calling
-  // booleanishToBoolean(false) — a real `false` is indistinguishable from
-  // "not provided" here. String `'false'` (above) is unaffected.
-  it('maybeBooleanishToBoolean returns undefined for a literal false (falsy short-circuit)', () => {
-    expect(maybeBooleanishToBoolean(false)).toBeUndefined()
+  // Previously a quirk, now fixed: the guard used to be `value ? ... :
+  // undefined`, which treats a literal boolean `false` as falsy and
+  // short-circuits to undefined, making a real `false` indistinguishable
+  // from "not provided". Callers read the result as
+  // `maybeBooleanishToBoolean(config?.inputProps?.disabled) ?? disabled`, so
+  // that collapse meant `inputProps.disabled = false` silently fell through
+  // to the outer `disabled` prop. Only `undefined` may yield `undefined`.
+  it('maybeBooleanishToBoolean preserves an explicit literal false', () => {
+    expect(maybeBooleanishToBoolean(false)).toBe(false)
+  })
+
+  it('maybeBooleanishToBoolean preserves an explicit literal true', () => {
+    expect(maybeBooleanishToBoolean(true)).toBe(true)
   })
 })

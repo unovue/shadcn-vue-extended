@@ -295,6 +295,18 @@ export function booleanishToBoolean(value: Booleanish) {
   }
 }
 
+/**
+ * Narrows an optional `Booleanish` to a `boolean`, preserving the
+ * absent/present distinction: only `undefined` yields `undefined`.
+ *
+ * The test must be `value === undefined`, not `value ?`, because callers use
+ * the result as `maybeBooleanishToBoolean(config?.inputProps?.disabled) ??
+ * disabled` — a truthiness test collapses an explicit `false` into "not
+ * provided", so `inputProps.disabled = false` fell through to the outer
+ * `disabled` prop and could never override a dependency-driven disable.
+ * (The string `'false'` was unaffected, which is what made the asymmetry
+ * easy to miss.)
+ */
 export function maybeBooleanishToBoolean(value?: Booleanish) {
-  return value ? booleanishToBoolean(value) : undefined
+  return value === undefined ? undefined : booleanishToBoolean(value)
 }
