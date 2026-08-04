@@ -104,8 +104,8 @@ watch(() => route.path, () => {
               <slot />
             </div>
 
-            <aside class="hidden self-end w-[172px] shrink-0 xl:block">
-              <div class="sticky top-[72px]">
+            <aside class="hidden w-[172px] shrink-0 xl:block">
+              <div class="sticky top-24">
                 <DocTableOfContent :key="route.path" />
               </div>
             </aside>
