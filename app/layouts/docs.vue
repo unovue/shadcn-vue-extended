@@ -99,12 +99,14 @@ watch(() => route.path, () => {
             prose column can take the space it frees up, rather than the two
             being centred together as one block.
           -->
-          <div class="mx-auto w-full max-w-[1200px] px-6 py-12 sm:px-10 xl:grid xl:grid-cols-[minmax(0,1fr)_172px] xl:gap-12">
-            <div class="mx-auto w-full min-w-0 max-w-[860px] xl:mx-0">
+          <div class="flex w-full gap-12 px-6 py-12 sm:px-10">
+            <div class="w-full min-w-0 max-w-[860px] flex-1">
               <slot />
             </div>
 
-            <aside class="hidden xl:block">
+            <!-- `ml-auto` keeps the rail on the right edge once the prose
+                 column stops growing at its max width. -->
+            <aside class="ml-auto hidden w-[172px] shrink-0 xl:block">
               <div class="sticky top-[72px]">
                 <DocTableOfContent :key="route.path" />
               </div>

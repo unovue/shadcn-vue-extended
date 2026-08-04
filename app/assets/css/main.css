@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/*
+ * Tailwind auto-detects sources from Vite's root, which Nuxt 4 points at
+ * `app/`. The registry sits outside it and is where the distributed components
+ * and their demos live, so its utilities have to be declared explicitly or
+ * they are silently dropped from the build.
+ *
+ * `content/` is deliberately not listed: the classes in those markdown files
+ * only appear inside documentation code samples, so scanning it would emit CSS
+ * for utilities that are never actually rendered.
+ */
+@source "../../../registry";
+
 @import "./fonts.css";
 
 @import "./materials.css";
