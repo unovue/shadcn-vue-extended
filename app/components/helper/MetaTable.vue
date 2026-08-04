@@ -14,7 +14,7 @@ defineProps<{
 </script>
 
 <template>
-  <Table class="not-prose mat-well overflow-hidden rounded-[11px] border-separate border-spacing-0">
+  <Table class="not-prose mat-well overflow-hidden rounded-[10px] border-separate border-spacing-0">
     <TableHeader>
       <TableRow>
         <TableHead class="w-[35%] capitalize text-ink font-semibold border-x border-b border-hairline px-2.5 border-inline-start-0">
@@ -37,7 +37,7 @@ defineProps<{
             <PopoverTrigger>
               <Icon name="lucide:info" />
             </PopoverTrigger>
-            <PopoverContent class="mat-float prose rounded-[11px] border-none p-3">
+            <PopoverContent class="mat-float prose rounded-[10px] border-none p-3">
               <Suspense>
                 <MDC :value="value.description" class="leading-6" partial />
 

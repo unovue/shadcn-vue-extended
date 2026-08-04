@@ -22,7 +22,7 @@ watch(data, () => {
 </script>
 
 <template>
-  <div :class="cn('flex h-full text-ink group-data-[view=preview]/block-view-wrapper:hidden', props.inContainer ? '' : 'mat-well overflow-hidden rounded-[13px] my-4 not-prose h-120')">
+  <div :class="cn('flex h-full text-ink group-data-[view=preview]/block-view-wrapper:hidden', props.inContainer ? '' : 'mat-well overflow-hidden rounded-[12px] my-4 not-prose h-120')">
     <div :class="cn('w-70', props.inContainer ? '' : 'w-56')">
       <div class="min-h-full w-full flex flex-col">
         <div class="flex h-full flex-col w-full flex-1 border-r border-hairline bg-sub text-ink">

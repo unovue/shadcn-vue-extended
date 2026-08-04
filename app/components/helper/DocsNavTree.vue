@@ -16,7 +16,7 @@ const route = useRoute()
       v-for="doc in group.children"
       :key="doc.path"
       :to="doc.path"
-      class="group flex h-[32px] w-full items-center gap-2 rounded-[9px] px-2.5 transition-colors"
+      class="group flex h-[32px] w-full items-center gap-2 rounded-[8px] px-2.5 transition-colors"
       :class="[
         doc.page === false && 'pointer-events-none opacity-60',
         route.path === doc.path ? 'bg-well' : 'hover:bg-well',

@@ -22,13 +22,11 @@
         margin-top: calc(var(--spacing) * 6);
     }
 
-    /* Section labels rather than headlines — small, capped and tracked out. */
     h2:where(:not(.not-prose, .not-prose *)) {
-        font-size: 11px;
-        line-height: 1.4;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--ink-3);
+        font-size: 17px;
+        line-height: 1.35;
+        letter-spacing: -0.02em;
+        color: var(--prose-heading-color);
         font-weight: var(--font-weight-semibold);
         margin-top: calc(var(--spacing) * 14);
     }
@@ -45,11 +43,11 @@
     } */
 
     h3:where(:not(.not-prose, .not-prose *)) {
-        font-size: 15px;
+        font-size: 14.5px;
         line-height: 1.4;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.01em;
         color: var(--prose-heading-color);
-        font-weight: var(--font-weight-medium);
+        font-weight: var(--font-weight-semibold);
         margin-top: calc(var(--spacing) * 10);
     }
 
@@ -131,7 +129,7 @@
         margin-top: calc(var(--spacing) * 4);
         margin-bottom: calc(var(--spacing) * 10);
         padding: calc(var(--spacing) * 4);
-        border-radius: 11px;
+        border-radius: 10px;
         overflow: auto;
         background: var(--well);
         box-shadow: var(--shadow-well);

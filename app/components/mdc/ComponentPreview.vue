@@ -25,7 +25,7 @@ function handleCopy() {
         </TabsTrigger>
       </TabsList>
 
-      <div class="mat-well rounded-[13px] p-4">
+      <div class="mat-well rounded-[12px] p-4">
         <TabsContent value="preview" class="min-h-60 flex items-center justify-center">
           <Suspense>
             <component :is="componentName" />

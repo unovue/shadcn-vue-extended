@@ -26,7 +26,7 @@ watch(() => route.path, () => {
 
             <button
               type="button"
-              class="mat-well press flex h-[34px] w-full items-center gap-2 rounded-[9px] px-2.5 text-left"
+              class="mat-well press flex h-[34px] w-full items-center gap-2 rounded-[8px] px-2.5 text-left"
               @click="searchOpen = true"
             >
               <Icon name="lucide:search" class="size-[13px] shrink-0 text-ink-3" />
@@ -45,7 +45,7 @@ watch(() => route.path, () => {
       </aside>
 
       <div class="min-w-0 flex-1">
-        <div class="mat-panel scroll-inset h-full overflow-y-auto overflow-x-hidden overscroll-contain rounded-[20px]">
+        <div class="mat-panel scroll-inset h-full overflow-y-auto overflow-x-hidden overscroll-contain rounded-[16px]">
           <header class="sticky top-0 z-20 flex h-12 items-center gap-2.5 border-b border-hairline bg-panel/85 px-4 backdrop-blur-md sm:gap-4 sm:px-5">
             <NuxtLink to="/" class="text-[13px] lg:hidden">
               <Wordmark />
@@ -125,7 +125,7 @@ watch(() => route.path, () => {
           role="presentation"
           @click.self="mobileNavOpen = false"
         >
-          <div class="mat-float absolute inset-y-3 left-3 flex w-[260px] flex-col rounded-[16px] p-2">
+          <div class="mat-float absolute inset-y-3 left-3 flex w-[260px] flex-col rounded-[12px] p-2">
             <div class="flex h-12 shrink-0 items-center justify-between px-2.5">
               <Wordmark class="text-[13px]" />
               <button

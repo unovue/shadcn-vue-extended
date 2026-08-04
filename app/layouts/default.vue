@@ -14,7 +14,7 @@ const mainNav = [
       document itself never scrolls — panels scroll internally instead.
     -->
     <div class="flex h-dvh flex-1 p-3 sm:h-auto sm:min-h-screen sm:p-5">
-      <div class="mat-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px]">
+      <div class="mat-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-[16px]">
         <header class="flex h-12 shrink-0 items-center gap-4 border-b border-hairline px-4 sm:px-5">
           <NuxtLink to="/" class="text-[13px]">
             <Wordmark />

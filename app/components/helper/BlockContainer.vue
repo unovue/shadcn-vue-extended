@@ -100,12 +100,12 @@ const iframeURL = computed(() => `/blocks/preview/${props.id}`)
       </div>
     </div>
 
-    <div class="mat-well overflow-hidden rounded-[13px] h-[var(--height)]">
+    <div class="mat-well overflow-hidden rounded-[12px] h-[var(--height)]">
       <TabsContent
         v-show="tabValue === 'preview'"
         force-mount
         value="preview"
-        class="relative after:absolute after:inset-0 after:right-3 after:z-0 after:rounded-[13px] after:bg-well  px-0"
+        class="relative after:absolute after:inset-0 after:right-3 after:z-0 after:rounded-[12px] after:bg-well  px-0"
       >
         <ResizablePanelGroup id="block-resizable" direction="horizontal" class="relative z-10 bg-background">
           <ResizablePanel

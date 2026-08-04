@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { AutoForm } from '~~/registry/ui/auto-form'
 import { ref } from 'vue'
 import { z } from 'zod'
+import { AutoForm } from '~~/registry/ui/auto-form'
 
 const formSchema = z.object({
   guestListName: z.string().describe('Guest list name'),

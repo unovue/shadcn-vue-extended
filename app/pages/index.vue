@@ -25,14 +25,14 @@ const { repo } = useAppConfig()
       <div class="mt-8 flex flex-wrap items-center gap-3 sm:mt-12">
         <NuxtLink
           to="/docs/getting-started/introduction"
-          class="press inline-flex h-8 items-center rounded-[9px] bg-ink px-3 text-[12.5px] font-medium text-panel sm:h-9 sm:px-3.5 sm:text-[13px]"
+          class="press inline-flex h-8 items-center rounded-[8px] bg-accent-ink px-3 text-[12.5px] font-medium text-white sm:h-9 sm:px-3.5 sm:text-[13px] dark:text-[#10241c]"
         >
           Browse the components
         </NuxtLink>
 
         <NuxtLink
           to="/blocks"
-          class="mat-cap press inline-flex h-8 items-center gap-2 rounded-[9px] px-3 text-[12.5px] font-medium text-ink-2 transition-colors hover:text-ink sm:h-9 sm:px-3.5 sm:text-[13px]"
+          class="mat-cap press inline-flex h-8 items-center gap-2 rounded-[8px] px-3 text-[12.5px] font-medium text-ink-2 transition-colors hover:text-ink sm:h-9 sm:px-3.5 sm:text-[13px]"
         >
           Blocks
         </NuxtLink>
@@ -41,7 +41,7 @@ const { repo } = useAppConfig()
           :href="repo"
           target="_blank"
           rel="noopener"
-          class="mat-cap press inline-flex h-8 items-center gap-2 rounded-[9px] px-3 text-[12.5px] font-medium text-ink-2 transition-colors hover:text-ink sm:h-9 sm:px-3.5 sm:text-[13px]"
+          class="mat-cap press inline-flex h-8 items-center gap-2 rounded-[8px] px-3 text-[12.5px] font-medium text-ink-2 transition-colors hover:text-ink sm:h-9 sm:px-3.5 sm:text-[13px]"
         >
           <Icon name="lucide:github" class="size-[13px]" />
           GitHub

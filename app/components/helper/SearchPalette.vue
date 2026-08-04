@@ -89,7 +89,7 @@ onKeyStroke('Escape', () => {
         @click.self="open = false"
       >
         <div
-          class="mat-float w-full max-w-[520px] overflow-hidden rounded-[14px]"
+          class="mat-float w-full max-w-[520px] overflow-hidden rounded-[12px]"
           role="dialog"
           aria-modal="true"
           aria-label="Search documentation"
@@ -121,7 +121,7 @@ onKeyStroke('Escape', () => {
               :key="link.path"
               type="button"
               :data-active="index === cursor ? '' : undefined"
-              class="flex h-[34px] w-full items-center gap-2 rounded-[9px] px-2.5 text-left data-[active]:bg-well"
+              class="flex h-[34px] w-full items-center gap-2 rounded-[8px] px-2.5 text-left data-[active]:bg-well"
               @click="select(index)"
               @mousemove="cursor = index"
             >

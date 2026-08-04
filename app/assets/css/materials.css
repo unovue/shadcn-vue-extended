@@ -6,26 +6,32 @@
  * `cap` is a key that sits proud of one. Depth comes from the shadow tokens
  * rather than from borders — borders are hairlines only.
  *
+ * The palette is cool-neutral with a green accent. Every ink/surface pair below
+ * clears WCAG AA for normal text, including white-on-accent for filled buttons,
+ * so the accent can be used for real controls and not just decoration.
+ *
  * These tokens are deliberately separate from the shadcn tokens in `main.css`.
  * The shadcn kit under `app/components/ui` keeps its own palette so component
  * previews still show what someone actually installs.
  */
 
 :root {
-  --bezel: #ffffff;
+  /* The bezel is a shade cooler than the panels so surfaces visibly float on
+     it rather than dissolving into a single sheet of white. */
+  --bezel: #eef1f5;
   --panel: #ffffff;
-  --well: #ffffff;
-  --sub: #fafafa;
+  --well: #f7f8fa;
+  --sub: #f8f9fb;
 
-  --hairline: #00000024;
-  --hairline-strong: #00000042;
+  --hairline: #0b132618;
+  --hairline-strong: #0b132638;
 
-  --ink: #131313;
-  --ink-2: #454545;
-  --ink-3: #6e6e6e;
+  --ink: #12141a;
+  --ink-2: #414652;
+  --ink-3: #697083;
 
-  --accent-ink: #4568ff;
-  --accent-soft: #edf1ff;
+  --accent-ink: #157e53;
+  --accent-soft: #e6f4ed;
   --moss: #3d7a4e;
   --flag: #c0442f;
 
@@ -37,20 +43,20 @@
 }
 
 .dark {
-  --bezel: #141312;
-  --panel: #1d1d1a;
-  --well: #252522;
-  --sub: #1a1a17;
+  --bezel: #121316;
+  --panel: #1a1c20;
+  --well: #22252a;
+  --sub: #16181c;
 
-  --hairline: #ffffff29;
-  --hairline-strong: #ffffff47;
+  --hairline: #ffffff26;
+  --hairline-strong: #ffffff45;
 
-  --ink: #f8f8f4;
-  --ink-2: #c2c2ba;
-  --ink-3: #93938b;
+  --ink: #f4f6f8;
+  --ink-2: #b9c0c9;
+  --ink-3: #878f9a;
 
-  --accent-ink: #93b0ff;
-  --accent-soft: #93b0ff24;
+  --accent-ink: #5fd0a0;
+  --accent-soft: #5fd0a021;
   --moss: #5bd79c;
   --flag: #f5897f;
 

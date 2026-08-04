@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { AutoForm } from '~~/registry/ui/auto-form'
 import { MailIcon, SearchIcon } from '@lucide/vue'
 import { ref } from 'vue'
 import { z } from 'zod'
+import { AutoForm } from '~~/registry/ui/auto-form'
 
 const formSchema = z.object({
   email: z.string().email(),
