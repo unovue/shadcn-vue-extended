@@ -328,3 +328,67 @@ describe('field type resolution (one mount per field type)', () => {
     expect(wrapper.find('input[name="user.name"]').exists()).toBe(true)
   })
 })
+
+// The docs point at zod's `refine`/`superRefine` as *the* answer for
+// cross-field rules, since HIDES/DISABLES/SETS_OPTIONS deliberately never
+// touch validation — and the dependencies example now relies on it to make an
+// invalid pair unsubmittable. Only `getObjectFormSchema` was unit-tested
+// against a ZodEffects wrapper, so nothing checked that AutoForm as a whole
+// still renders and validates through one.
+describe('a ZodEffects-wrapped schema (.superRefine)', () => {
+  // `meal` carries a default rather than being set through the UI: the
+  // `select[name=...]` reka-ui renders is a hidden mirror for native form
+  // submission, so `setValue` on it does not drive the component's model.
+  const schema = z.object({
+    vegetarian: z.boolean().default(false),
+    meal: z.enum(['Pasta', 'Beef']).default('Beef'),
+  }).superRefine((values, ctx) => {
+    if (values.vegetarian && values.meal === 'Beef') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['meal'], message: 'Not vegetarian.' })
+    }
+  })
+
+  it('still renders every field of the wrapped object', async () => {
+    const wrapper = mount(AutoForm as any, { props: { schema } })
+    await flushPromises()
+    expect(wrapper.find('[role="checkbox"]').exists()).toBe(true)
+    // no leading '' placeholder option here, unlike the enum tests above —
+    // `meal` has a default, so the select mounts with a value already set
+    const values = wrapper.findAll('select[name="meal"] option').map(o => o.attributes('value'))
+    expect(values).toEqual(['Pasta', 'Beef'])
+  })
+
+  it('blocks submission and surfaces the cross-field message when the rule is violated', async () => {
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, { props: { schema }, attrs: { onSubmit } })
+    await flushPromises()
+
+    // vegetarian -> true, against the default meal of 'Beef'
+    await wrapper.find('[role="checkbox"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await new Promise(resolve => setTimeout(resolve, 20))
+    await flushPromises()
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    const messages = wrapper.findAll('[data-slot="form-message"]').map(m => m.text())
+    expect(messages).toContain('Not vegetarian.')
+  })
+
+  it('submits when the cross-field rule is satisfied', async () => {
+    const onSubmit = vi.fn()
+    const wrapper = mount(AutoForm as any, { props: { schema }, attrs: { onSubmit } })
+    await flushPromises()
+
+    // left as-is: vegetarian false, meal 'Beef' — the rule does not apply
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await new Promise(resolve => setTimeout(resolve, 20))
+    await flushPromises()
+
+    expect(onSubmit).toHaveBeenCalledTimes(1)
+    expect(onSubmit.mock.calls[0][0]).toEqual({ vegetarian: false, meal: 'Beef' })
+  })
+})

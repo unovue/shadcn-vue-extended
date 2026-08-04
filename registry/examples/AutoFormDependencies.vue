@@ -20,6 +20,22 @@ const formSchema = z.object({
   // cosmetic asterisk.
   allergyDetails: z.string().optional(),
 })
+  // SETS_OPTIONS only narrows what the select *renders* - it never touches
+  // validation, and it can't retroactively clear a value that was already
+  // chosen before the restriction kicked in. So the "vegetarians can't have
+  // the Beef Wellington" rule has to be enforced in the schema too, per the
+  // `refine` guidance in the dependencies docs. Without this, checking
+  // "vegetarian" while Beef Wellington is already selected leaves the
+  // invalid pair submittable.
+  .superRefine((values, ctx) => {
+    if (values.vegetarian && values.mealOption === 'Beef Wellington') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['mealOption'],
+        message: 'Beef Wellington is not a vegetarian option.',
+      })
+    }
+  })
 
 const dependencies: Dependency<z.infer<typeof formSchema>>[] = [
   {
@@ -31,10 +47,15 @@ const dependencies: Dependency<z.infer<typeof formSchema>>[] = [
   },
   {
     // Vegetarians can't pick the Beef Wellington - remove it from the options.
+    // The predicate deliberately does NOT exclude the case where Beef
+    // Wellington is already selected: guarding on that would switch the
+    // restriction off in exactly the situation it exists to prevent, leaving
+    // the offending option selectable. The schema's superRefine above is what
+    // makes the combination unsubmittable.
     sourceField: 'vegetarian',
     type: DependencyType.SETS_OPTIONS,
     targetField: 'mealOption',
-    when: (vegetarian, mealOption) => vegetarian && mealOption !== 'Beef Wellington',
+    when: vegetarian => vegetarian === true,
     options: ['Pasta', 'Salad'],
   },
   {
