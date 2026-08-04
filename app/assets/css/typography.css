@@ -108,21 +108,22 @@
         font-weight: var(--font-weight-semibold);
     }
 
+    /* A chip rather than the upstream literal-backtick treatment, which put a
+       ` glyph either side and read as stray quotes at this size. */
     code:where(:not(.not-prose, .not-prose *)) {
         font-variant-ligatures: none;
         font-family: var(--font-mono);
         font-weight: var(--font-weight-medium);
+        font-size: 0.9em;
         color: var(--prose-code-color);
+        background: var(--well);
+        border: 1px solid var(--hairline);
+        border-radius: 5px;
+        padding: 0.1em 0.32em;
     }
 
     :where(h2, h3, h4) code:where(:not(.not-prose, .not-prose *)) {
         font-weight: var(--font-weight-semibold);
-    }
-
-    code:where(:not(.not-prose, .not-prose *))::before,
-    code:where(:not(.not-prose, .not-prose *))::after {
-        display: inline;
-        content: "`";
     }
 
     pre:where(:not(.not-prose, .not-prose *)) {
@@ -132,7 +133,7 @@
         border-radius: 10px;
         overflow: auto;
         background: var(--well);
-        box-shadow: var(--shadow-well);
+        border: 1px solid var(--hairline);
     }
 
     pre code * + *:where(:not(.not-prose, .not-prose *)) {
@@ -144,11 +145,17 @@
         content: none;
     }
 
+    /* The chip styling above is for inline code only — inside a block the
+       surrounding <pre> already provides the surface. */
     pre code:where(:not(.not-prose, .not-prose *)) {
         font-variant-ligatures: none;
         font-family: var(--font-mono);
         font-size: 12.5px;
         line-height: 1.7;
+        background: none;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
     }
 
     table:where(:not(.not-prose, .not-prose *)) {
@@ -281,4 +288,25 @@
             max-width: calc(100% + calc(var(--spacing) * 8));
         }
     }
+}
+
+/*
+ * Code inside a component preview. It lives under `.not-prose`, so none of the
+ * `.prose pre` rules above reach it — without this the block had no overflow
+ * handling and long lines simply spilled past the container's edge instead of
+ * scrolling.
+ */
+.preview-code pre {
+    max-width: 100%;
+    overflow-x: auto;
+    font-variant-ligatures: none;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+}
+
+/* Leave room for the copy button so it never sits on top of the first line. */
+.preview-code pre code {
+    display: inline-block;
+    padding-right: calc(var(--spacing) * 8);
 }

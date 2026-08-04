@@ -179,7 +179,14 @@
 
 @utility step {
   counter-increment: step;
-  :before {
+  /* The marker is absolutely positioned, so the step itself has to be the
+     containing block — otherwise it resolves against whatever ancestor
+     happens to be positioned and lands somewhere unrelated on the page. */
+  position: relative;
+
+  /* `&::before`, not a bare `:before`: the latter compiles to `.step *::before`
+     and stamped the counter onto every descendant, links included. */
+  &::before {
       @apply absolute size-7 mat-cap text-ink-2 rounded-full font-mono font-medium text-center text-[11.5px] inline-flex items-center justify-center indent-px;
       @apply ml-[-46px] mt-[-4px];
       content: counter(step);

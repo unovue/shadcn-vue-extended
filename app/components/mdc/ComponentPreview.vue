@@ -40,7 +40,12 @@ function handleCopy() {
             </template>
           </Suspense>
         </TabsContent>
-        <TabsContent value="code" class="prose relative">
+        <!--
+          Not `prose`: this sits under `.not-prose`, and every prose rule
+          excludes `.not-prose *`, so that class is inert here. The code block
+          gets its own styling instead.
+        -->
+        <TabsContent value="code" class="preview-code relative">
           <Button variant="ghost" :class="{ copied }" class="absolute top-0 right-0" @click="handleCopy">
             <Icon :name="copied ? 'lucide:check' : 'lucide:clipboard'" />
           </Button>
