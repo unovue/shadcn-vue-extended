@@ -2,6 +2,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 import { AutoForm } from '..'
+import { getRequiresDependencyIssues } from '../dependencies'
 import { DependencyType } from '../interface'
 
 // `useDependencies` (dependencies.ts) relies on provide/inject wired up by
@@ -355,6 +356,74 @@ describe('useDependencies via <AutoForm dependencies>', () => {
       await expandToItemFields(wrapper)
       await toggleSource(wrapper)
       expect(wrapper.find('input[name="items[0].x"]').attributes('disabled')).toBe('')
+    })
+  })
+
+  // The REQUIRES validation path (`getRequiresDependencyIssues`) resolves
+  // dependency paths itself rather than going through `getSourceValue`, so
+  // the DISABLES coverage above does not reach it. It used to stop one level
+  // short of expanding an array: for a shared parent of exactly `items` the
+  // last path segment was consumed on the way in, leaving nothing to walk,
+  // so the *array* was treated as a single item. That read `hasX`/`x` off the
+  // array object (always undefined, so the dependency silently never fired)
+  // and, for a `when()` that is truthy on undefined, emitted the schema-level
+  // path `items.x`, which maps to no registered field — blocking submit with
+  // no message rendered anywhere.
+  describe('getRequiresDependencyIssues path expansion over arrays', () => {
+    const dependencies = [{
+      sourceField: 'items.hasX',
+      targetField: 'items.x',
+      type: DependencyType.REQUIRES,
+      when: (v: any) => v === true,
+    }] as any
+
+    it('raises one issue per array item whose own sibling source is active and target empty', () => {
+      const values = {
+        items: [
+          { hasX: true, x: '' }, // active + empty -> issue
+          { hasX: false, x: '' }, // inactive -> no issue
+          { hasX: true, x: 'ok' }, // active but filled -> no issue
+        ],
+      }
+      expect(getRequiresDependencyIssues(values, dependencies)).toEqual([
+        { path: 'items[0].x', message: 'Required' },
+      ])
+    })
+
+    it('raises nothing when no item has its source active', () => {
+      expect(getRequiresDependencyIssues({ items: [{ hasX: false, x: '' }] }, dependencies)).toEqual([])
+    })
+
+    it('emits per-item vee-validate paths, never the unmappable schema-level `items.x`', () => {
+      const alwaysActive = [{
+        sourceField: 'items.hasX',
+        targetField: 'items.x',
+        type: DependencyType.REQUIRES,
+        when: () => true,
+      }] as any
+      const issues = getRequiresDependencyIssues({ items: [{ x: '' }, { x: '' }] }, alwaysActive)
+      expect(issues.map(issue => issue.path)).toEqual(['items[0].x', 'items[1].x'])
+    })
+
+    it('still resolves a non-array sibling pair off the shared parent object', () => {
+      const nested = [{
+        sourceField: 'address.hasZip',
+        targetField: 'address.zip',
+        type: DependencyType.REQUIRES,
+        when: (v: any) => v === true,
+      }] as any
+      const issues = getRequiresDependencyIssues({ address: { hasZip: true, zip: '' } }, nested)
+      expect(issues).toEqual([{ path: 'address.zip', message: 'Required' }])
+    })
+
+    it('still resolves a flat top-level pair', () => {
+      const flat = [{
+        sourceField: 'hasX',
+        targetField: 'x',
+        type: DependencyType.REQUIRES,
+        when: (v: any) => v === true,
+      }] as any
+      expect(getRequiresDependencyIssues({ hasX: true, x: '' }, flat)).toEqual([{ path: 'x', message: 'Required' }])
     })
   })
 })

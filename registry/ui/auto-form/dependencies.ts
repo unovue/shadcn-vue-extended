@@ -45,17 +45,25 @@ function isEmptyDependencyValue(value: unknown): boolean {
  * Walks `segments` off `base`, expanding into every element whenever an
  * array is encountered along the way — so a schema-level path like
  * `items.hasX` resolves against every `items[N].hasX`.
+ *
+ * The array check has to come *before* the "ran out of segments" check:
+ * for `items.hasX`/`items.x` the shared parent is just `items`, so the last
+ * segment is consumed on the way in and we arrive at the array itself with
+ * nothing left to walk. Testing `segments.length === 0` first would return
+ * the whole array as a single "item", which reads `hasX`/`x` off the array
+ * object (always `undefined`) and yields the unmappable path `items.x`
+ * instead of one `items[N].x` per element.
  */
 function expandDependencyPath(
   base: unknown,
   segments: string[],
   path: (string | number)[] = [],
 ): { path: (string | number)[], value: unknown }[] {
-  if (segments.length === 0)
-    return [{ path, value: base }]
-
   if (Array.isArray(base))
     return base.flatMap((item, index) => expandDependencyPath(item, segments, [...path, index]))
+
+  if (segments.length === 0)
+    return [{ path, value: base }]
 
   if (base === null || base === undefined || typeof base !== 'object')
     return []
