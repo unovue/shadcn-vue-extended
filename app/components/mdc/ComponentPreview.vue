@@ -25,7 +25,12 @@ function handleCopy() {
         </TabsTrigger>
       </TabsList>
 
-      <div class="mat-well rounded-[12px] p-4">
+      <!--
+        Demos render on shadcn's own `--background`/`--border` rather than on a
+        material surface, so a preview looks exactly like the component will in
+        the project that installs it.
+      -->
+      <div class="rounded-[12px] border border-border bg-background p-4">
         <TabsContent value="preview" class="min-h-60 flex items-center justify-center">
           <Suspense>
             <component :is="componentName" />

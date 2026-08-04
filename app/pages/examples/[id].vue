@@ -9,7 +9,7 @@ const component = defineAsyncComponent(() => import(`~~/registry/examples/${rout
 </script>
 
 <template>
-  <div class="relative flex min-h-screen w-full items-center justify-center bg-accent/50">
+  <div class="relative flex min-h-screen w-full items-center justify-center bg-background">
     <component :is="component" />
   </div>
 </template>
