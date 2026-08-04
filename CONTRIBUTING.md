@@ -43,7 +43,7 @@ Follow this checklist. It's the same five-step workflow used by every existing i
    - `::block-code-viewer{id="<block-name>"}` — file tree + source viewer for blocks.
    - Exemplar (component): `content/docs/2.components/separator-label.md`
 
-5. **Blocks only**: add a `<BlockContainer id="<name>" />` entry in `pages/blocks/index.vue` so it appears on the `/blocks` page. Previews render via `pages/blocks/preview/[id].vue` in an iframe.
+5. **Blocks only**: add a `<BlockContainer id="<name>" />` entry in `app/pages/blocks/index.vue` so it appears on the `/blocks` page. Previews render via `app/pages/blocks/preview/[id].vue` in an iframe.
 
 ## Before you open a PR
 

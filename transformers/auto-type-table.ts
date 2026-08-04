@@ -12,7 +12,9 @@ export default async (mdc: MDCParserResult) => {
   visit(mdc.body, (n) => {
     if (n.type === 'element' && n.tag === 'auto-type-table' && n.props?.path) {
       if (!checker) {
-        checker = createChecker(join(__dirname, 'tsconfig.json'))
+        // The root tsconfig.json is only a solution file (`files: []` + project
+        // references) under Nuxt 4, so the checker gets its own project.
+        checker = createChecker(join(__dirname, 'tsconfig.component-meta.json'))
       }
 
       const { path } = n.props

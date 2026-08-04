@@ -1,0 +1,152 @@
+/*
+ * Material design language for the site chrome.
+ *
+ * The metaphor is physical: a `bezel` is the frame the whole app sits in,
+ * `panel` is a surface that floats on it, `well` is recessed into a panel, and
+ * `cap` is a key that sits proud of one. Depth comes from the shadow tokens
+ * rather than from borders — borders are hairlines only.
+ *
+ * These tokens are deliberately separate from the shadcn tokens in `main.css`.
+ * The shadcn kit under `app/components/ui` keeps its own palette so component
+ * previews still show what someone actually installs.
+ */
+
+:root {
+  --bezel: #ffffff;
+  --panel: #ffffff;
+  --well: #ffffff;
+  --sub: #fafafa;
+
+  --hairline: #00000024;
+  --hairline-strong: #00000042;
+
+  --ink: #131313;
+  --ink-2: #454545;
+  --ink-3: #6e6e6e;
+
+  --accent-ink: #4568ff;
+  --accent-soft: #edf1ff;
+  --moss: #3d7a4e;
+  --flag: #c0442f;
+
+  --shadow-float: 0 28px 56px -24px #00000038, 0 0 0 1px #0000000f;
+  --shadow-lift: 0 1px 2px #0000000a, 0 0 0 1px #0000001c;
+  --shadow-well: inset 0 1px 2px #0000000d, inset 0 0 0 1px #0000001a;
+  --shadow-cap: 0 1.5px 0 #00000017, inset 0 0 0 1px #0000001c;
+  --shadow-row: inset 0 0 0 1px #00000012, 0 1px 2px #0000000d;
+}
+
+.dark {
+  --bezel: #141312;
+  --panel: #1d1d1a;
+  --well: #252522;
+  --sub: #1a1a17;
+
+  --hairline: #ffffff29;
+  --hairline-strong: #ffffff47;
+
+  --ink: #f8f8f4;
+  --ink-2: #c2c2ba;
+  --ink-3: #93938b;
+
+  --accent-ink: #93b0ff;
+  --accent-soft: #93b0ff24;
+  --moss: #5bd79c;
+  --flag: #f5897f;
+
+  --shadow-float: 0 28px 56px -22px #000000b3, 0 0 0 1px #ffffff0d;
+  --shadow-lift: 0 1px 2px #0006, inset 0 1px 0 #ffffff0d, 0 0 0 1px #ffffff0d;
+  --shadow-well: inset 0 1px 3px #0006, inset 0 0 0 1px #ffffff08;
+  --shadow-cap: 0 1.5px 0 #00000080, inset 0 0 0 1px #ffffff1a;
+  --shadow-row: inset 0 0 0 1px #ffffff0f, 0 1px 2px #00000040;
+}
+
+@theme inline {
+  --color-bezel: var(--bezel);
+  --color-panel: var(--panel);
+  --color-well: var(--well);
+  --color-sub: var(--sub);
+
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-moss: var(--moss);
+  --color-flag: var(--flag);
+}
+
+/* Surfaces ---------------------------------------------------------------- */
+
+@utility mat-panel {
+  background: var(--panel);
+  box-shadow: var(--shadow-lift);
+}
+
+@utility mat-float {
+  background: var(--panel);
+  box-shadow: var(--shadow-float);
+}
+
+@utility mat-well {
+  background: var(--well);
+  box-shadow: var(--shadow-well);
+}
+
+@utility mat-cap {
+  background: var(--panel);
+  box-shadow: var(--shadow-cap);
+}
+
+@utility mat-row {
+  background: var(--well);
+  box-shadow: var(--shadow-row);
+}
+
+/* Behaviour --------------------------------------------------------------- */
+
+/* A key that physically depresses. Kept short so it reads as contact, not travel. */
+@utility press {
+  transition:
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 0.15s;
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+/* Fades scroll content out at both edges instead of clipping it hard. */
+@utility fade-y {
+  mask-image: linear-gradient(#0000, #000 14px calc(100% - 22px), #0000);
+  -webkit-mask-image: linear-gradient(#0000, #000 14px calc(100% - 22px), #0000);
+}
+
+@utility no-bar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Keeps a panel's scrollbar clear of its rounded corners. */
+@utility scroll-inset {
+  &::-webkit-scrollbar-track {
+    margin-block: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press {
+    transition: none;
+  }
+  .press:active {
+    transform: none;
+  }
+}
