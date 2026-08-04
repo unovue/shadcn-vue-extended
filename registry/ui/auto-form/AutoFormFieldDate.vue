@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils'
 
 import { DateFormatter, fromDate, getLocalTimeZone, parseDate, toCalendarDate } from '@internationalized/date'
-import { CalendarIcon } from 'lucide-vue-next'
+import { CalendarIcon } from '@lucide/vue'
 import AutoFormFieldWrapper from './AutoFormFieldWrapper.vue'
 import { maybeBooleanishToBoolean } from './utils'
 

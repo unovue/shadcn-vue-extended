@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 import { AutoForm, AutoFormFieldWrapper } from '@/registry/ui/auto-form'
-import { StarIcon } from 'lucide-vue-next'
+import { StarIcon } from '@lucide/vue'
 import { defineComponent, h, ref } from 'vue'
 import { z } from 'zod'
 

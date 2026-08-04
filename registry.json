@@ -30,7 +30,8 @@
         "vee-validate",
         "@vee-validate/zod",
         "zod",
-        "reka-ui"
+        "reka-ui",
+        "@lucide/vue"
       ],
       "registryDependencies": [
         "form",
@@ -134,7 +135,7 @@
       "title": "Dialog 01",
       "description": "A dialog block example.",
       "dependencies": [
-        "lucide-vue-next"
+        "@lucide/vue"
       ],
       "registryDependencies": [
         "button",
@@ -153,7 +154,7 @@
       "title": "Dialog 02",
       "description": "A dialog block example.",
       "dependencies": [
-        "lucide-vue-next"
+        "@lucide/vue"
       ],
       "registryDependencies": [
         "button",

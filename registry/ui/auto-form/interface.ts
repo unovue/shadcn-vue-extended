@@ -67,7 +67,7 @@ export interface ConfigItem {
    * doesn't overlap typed text. No-op for every other field component.
    */
   icon?: {
-    /** The icon component to render, e.g. a `lucide-vue-next` icon. */
+    /** The icon component to render, e.g. a `@lucide/vue` icon. */
     component: Component
     /** Which side of the input to render the icon on. Defaults to `'left'`. */
     position?: 'left' | 'right'

@@ -2,7 +2,7 @@
 import type { FieldProps } from './interface'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Trash } from 'lucide-vue-next'
+import { Trash } from '@lucide/vue'
 import { ref } from 'vue'
 import AutoFormFieldWrapper from './AutoFormFieldWrapper.vue'
 

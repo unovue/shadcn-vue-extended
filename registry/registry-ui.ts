@@ -26,6 +26,10 @@ export const ui = [
       '@vee-validate/zod',
       'zod',
       'reka-ui',
+      // AutoFormFieldArray/Date/File import icons directly; this was previously
+      // undeclared and only resolved by accident via a registryDependency that
+      // happened to pull an icon package in.
+      '@lucide/vue',
     ],
     registryDependencies: [
       'form',
