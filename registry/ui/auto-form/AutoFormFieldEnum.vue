@@ -34,9 +34,15 @@ const normalizedOptions = computed(() => {
     <template #default="slotProps">
       <slot v-bind="slotProps">
         <RadioGroup v-if="variant === 'radio'" :disabled="maybeBooleanishToBoolean(config?.inputProps?.disabled) ?? disabled" orientation="vertical" v-bind="{ ...slotProps.componentField }">
+          <!--
+            The id is scoped by `fieldName`: option values are not unique across
+            a form, so two radio-variant enum fields sharing an option (e.g. two
+            `z.enum(['yes', 'no'])` fields) would otherwise emit duplicate DOM
+            ids and every <Label for> would target the first field's input.
+          -->
           <div v-for="(option, index) in normalizedOptions" :key="option.value" class="mb-2 flex items-center gap-3 space-y-0">
-            <RadioGroupItem :id="`${option.value}-${index}`" :value="option.value" />
-            <Label :for="`${option.value}-${index}`">{{ option.label }}</Label>
+            <RadioGroupItem :id="`${fieldName}-${option.value}-${index}`" :value="option.value" />
+            <Label :for="`${fieldName}-${option.value}-${index}`">{{ option.label }}</Label>
           </div>
         </RadioGroup>
 
