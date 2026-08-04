@@ -78,9 +78,16 @@ const formComponentProps = computed(() => {
 </script>
 
 <template>
+  <!--
+    Fields carry no outer margin of their own, so the form owns the rhythm
+    between them. `space-y-5` matches the spacing nested object fields already
+    use in AutoFormFieldObject, so a nested group reads the same as the top
+    level. A `class` passed by the caller still merges in and can override it.
+  -->
   <component
     :is="formComponent"
     v-bind="formComponentProps"
+    class="space-y-5"
   >
     <slot name="customAutoForm" :fields="fields">
       <template v-for="(shape, key) of shapes" :key="key">

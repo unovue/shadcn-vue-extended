@@ -94,18 +94,21 @@ watch(() => route.path, () => {
           <!-- Softens content passing under the sticky header instead of a hard cut. -->
           <div class="pointer-events-none sticky top-12 z-10 -mb-12 h-12 bg-gradient-to-b from-panel via-panel/85 to-transparent" />
 
-          <div class="mx-auto w-full max-w-[680px] px-6 py-12 sm:px-10 xl:max-w-[900px]">
-            <div class="xl:grid xl:grid-cols-[minmax(0,1fr)_180px] xl:gap-10">
-              <div class="min-w-0">
-                <slot />
-              </div>
-
-              <aside class="hidden xl:block">
-                <div class="sticky top-[72px]">
-                  <DocTableOfContent :key="route.path" />
-                </div>
-              </aside>
+          <!--
+            The contents rail is pinned to the right edge of the panel so the
+            prose column can take the space it frees up, rather than the two
+            being centred together as one block.
+          -->
+          <div class="mx-auto w-full max-w-[1200px] px-6 py-12 sm:px-10 xl:grid xl:grid-cols-[minmax(0,1fr)_172px] xl:gap-12">
+            <div class="mx-auto w-full min-w-0 max-w-[860px] xl:mx-0">
+              <slot />
             </div>
+
+            <aside class="hidden xl:block">
+              <div class="sticky top-[72px]">
+                <DocTableOfContent :key="route.path" />
+              </div>
+            </aside>
           </div>
         </div>
       </div>
