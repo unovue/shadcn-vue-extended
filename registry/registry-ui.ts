@@ -26,6 +26,10 @@ export const ui = [
       '@vee-validate/zod',
       'zod',
       'reka-ui',
+      // AutoFormFieldArray/Date/File import icons directly; this was previously
+      // undeclared and only resolved by accident via a registryDependency that
+      // happened to pull an icon package in.
+      '@lucide/vue',
     ],
     registryDependencies: [
       'form',
@@ -41,6 +45,8 @@ export const ui = [
       'select',
       'input',
       'textarea',
+      'tags-input',
+      'pin-input',
     ],
     files: [
       {
@@ -81,6 +87,18 @@ export const ui = [
       },
       {
         path: 'ui/auto-form/AutoFormFieldObject.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/auto-form/AutoFormFieldPin.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/auto-form/AutoFormFieldTags.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/auto-form/AutoFormFieldWrapper.vue',
         type: 'registry:ui',
       },
       {

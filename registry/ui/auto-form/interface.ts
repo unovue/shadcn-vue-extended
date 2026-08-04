@@ -30,6 +30,9 @@ export interface InputComponents {
   file: Component
   array: Component
   object: Component
+  // Phase 4D
+  tags: Component
+  pin: Component
 };
 
 export interface ConfigItem {
@@ -37,11 +40,77 @@ export interface ConfigItem {
   label?: string
   /** Value for the `FormDescription` */
   description?: string
-  /** Pick which component to be rendered. */
+  /**
+   * Pick which component to be rendered. Either one of the built-in
+   * `INPUT_COMPONENTS` keys, or a custom `Component` for full control over
+   * the field's markup.
+   *
+   * Contract for a custom component: `AutoFormField.vue` mounts it in place
+   * of the built-in field and binds exactly the `FieldProps` shape —
+   * `fieldName`, `label`, `required`, `options`, `disabled`, and `config`
+   * (this same `ConfigItem`, so the custom component can read
+   * `config.inputProps`, `config.description`, etc. itself). It receives no
+   * other props. To match the built-in fields' label/description/validation
+   * message skeleton, wrap the control in `AutoFormFieldWrapper` (exported
+   * from `./index.ts`), which owns that skeleton and exposes the
+   * `vee-validate` `FormField` slot props (`componentField`, etc.) through
+   * its default slot.
+   */
   component?: keyof typeof INPUT_COMPONENTS | Component
   /** Hide `FormLabel`. */
   hideLabel?: boolean
   inputProps?: InputHTMLAttributes
+  // Phase 4D
+  /**
+   * Render an icon inside `AutoFormFieldInput`'s control. Wraps the `Input`
+   * in a `relative` container and adds left/right padding so the icon
+   * doesn't overlap typed text. No-op for every other field component.
+   */
+  icon?: {
+    /** The icon component to render, e.g. a `@lucide/vue` icon. */
+    component: Component
+    /** Which side of the input to render the icon on. Defaults to `'left'`. */
+    position?: 'left' | 'right'
+  }
+
+  // ---- Phase 4C ----
+  /**
+   * Explicit value/label pairs for an enum-rendered field (`select` or
+   * `radio` variant of `AutoFormFieldEnum`). When set, this takes
+   * precedence over the schema-derived `options` (plain strings, where the
+   * string doubles as both value and beautified label): each option's
+   * `label` is displayed and its `value` is what gets submitted. This is a
+   * rendering-only concern — the underlying zod enum/literal union must
+   * still validate against the `value`s listed here; keeping the two in
+   * sync is the consumer's responsibility.
+   */
+  options?: Array<{ value: string, label: string }>
+  /**
+   * The value submitted when an `AutoFormFieldBoolean` checkbox is checked.
+   * Defaults to `true`. Only honored by the `checkbox` variant — the
+   * `switch` variant is always a plain boolean and ignores this.
+   */
+  checkedValue?: unknown
+  /**
+   * The value submitted when an `AutoFormFieldBoolean` checkbox is
+   * unchecked. Defaults to `false`. Only honored by the `checkbox`
+   * variant — the `switch` variant is always a plain boolean and ignores
+   * this.
+   */
+  uncheckedValue?: unknown
+  /**
+   * When set, `AutoFormFieldBoolean`'s `checkbox` variant becomes a
+   * tri-state control that cycles `checkedValue` -> `uncheckedValue` ->
+   * `indeterminateValue` -> `checkedValue` ... on each click, using
+   * reka-ui's `CheckboxRoot` indeterminate visual state. Unset (the
+   * default) keeps the checkbox a plain two-state toggle. The `switch`
+   * variant ignores this — it is always a plain boolean. The schema side
+   * (validating that the field may hold `indeterminateValue`, e.g.
+   * `z.union([z.literal(true), z.literal(false), z.literal('excluded')])`)
+   * is the consumer's responsibility.
+   */
+  indeterminateValue?: unknown
+
 }
 
 // Define a type to unwrap an array

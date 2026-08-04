@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Check } from 'lucide-vue-next'
+import { Check } from '@lucide/vue'
 import { ref } from 'vue'
 
 const open = ref(true)

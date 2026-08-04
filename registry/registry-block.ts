@@ -4,7 +4,7 @@ export const block = [
     type: 'registry:block',
     title: 'Dialog 01',
     description: 'A dialog block example.',
-    dependencies: ['lucide-vue-next'],
+    dependencies: ['@lucide/vue'],
     registryDependencies: [
       'button',
       'dialog',
@@ -21,7 +21,7 @@ export const block = [
     type: 'registry:block',
     title: 'Dialog 02',
     description: 'A dialog block example.',
-    dependencies: ['lucide-vue-next'],
+    dependencies: ['@lucide/vue'],
     registryDependencies: [
       'button',
       'dialog',

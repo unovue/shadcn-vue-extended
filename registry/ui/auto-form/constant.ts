@@ -7,6 +7,8 @@ import AutoFormFieldFile from './AutoFormFieldFile.vue'
 import AutoFormFieldInput from './AutoFormFieldInput.vue'
 import AutoFormFieldNumber from './AutoFormFieldNumber.vue'
 import AutoFormFieldObject from './AutoFormFieldObject.vue'
+import AutoFormFieldPin from './AutoFormFieldPin.vue'
+import AutoFormFieldTags from './AutoFormFieldTags.vue'
 
 export const INPUT_COMPONENTS: InputComponents = {
   date: AutoFormFieldDate,
@@ -20,6 +22,9 @@ export const INPUT_COMPONENTS: InputComponents = {
   file: AutoFormFieldFile,
   array: AutoFormFieldArray,
   object: AutoFormFieldObject,
+  // Phase 4D
+  tags: AutoFormFieldTags,
+  pin: AutoFormFieldPin,
 }
 
 /**

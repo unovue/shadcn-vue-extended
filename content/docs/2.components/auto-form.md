@@ -12,6 +12,9 @@ AutoForm is a drop-in form builder for your internal and low-priority forms with
 Credit: Heavily inspired by [AutoForm](https://github.com/vantezzen/auto-form) by Vantezzen
 ::
 
+::component-preview{path=/registry/examples/AutoFormBasic.vue}
+::
+
 ## Installation
 
 <Steps>
@@ -29,14 +32,22 @@ npx shadcn-vue@latest add auto-form
 
 Currently, these field types are supported out of the box:
 
-- boolean (checkbox, switch)
+- boolean (checkbox, switch) — the checkbox variant also supports a tri-state [indeterminate mode](#checkedvalue-uncheckedvalue-indeterminatevalue)
 - date (date picker)
 - enum (select, radio group)
 - number (input)
-- string (input, textfield)
+- string (input, textarea, [pin input](#component))
+- array of strings ([tags input](#component))
+- array of objects (accordion, add/remove items)
+- object (nested accordion)
 - file (file)
 
-You can add support for other field types by adding them to the `INPUT_COMPONENTS` object in `auto-form/constants.ts`.
+You can add support for other field types by adding them to the `INPUT_COMPONENTS` object in `auto-form/constant.ts`.
+
+Two things worth knowing about how schemas map to rendered fields:
+
+- Fields marked `.readonly()` are skipped entirely — AutoForm renders nothing for them, rather than an editable control. See [Readonly fields](#readonly-fields).
+- A `z.union([...])` field renders using its first "meaningful" member (skipping bare literals/`undefined`/`null` placeholders), while validation still runs against the full union. See [Unions](#unions).
 
 ## Zod configuration
 
@@ -86,45 +97,6 @@ const formSchema = z.object({
 
 If you want to set default value of date, convert it to Date first using `new Date(val)`.
 
-### Sub-objects
-
-You can nest objects to create accordion sections.
-
-```ts
-const formSchema = z.object({
-  address: z.object({
-    street: z.string(),
-    city: z.string(),
-    zip: z.string(),
-
-    // You can nest objects as deep as you want
-    nested: z.object({
-      foo: z.string(),
-      bar: z.string(),
-
-      nested: z.object({
-        foo: z.string(),
-        bar: z.string(),
-      }),
-    }),
-  }),
-})
-```
-
-Like with normal objects, you can use the `describe` method to set a label and description for the section:
-
-```ts
-const formSchema = z.object({
-  address: z
-    .object({
-      street: z.string(),
-      city: z.string(),
-      zip: z.string(),
-    })
-    .describe('Your address'),
-})
-```
-
 ### Select/Enums
 
 AutoForm supports `enum` and `nativeEnum` to create select fields.
@@ -142,51 +114,32 @@ enum BreadTypes {
   Other,
 }
 // Keep in mind that zod will validate and return the enum labels, not the enum values!
-const formSchema = z.object({
+const nativeEnumSchema = z.object({
   bread: z.nativeEnum(BreadTypes),
 })
 ```
 
-### Arrays
+### Unions
 
-AutoForm supports arrays _of objects_. Because inferring things like field labels from arrays of strings/numbers/etc. is difficult, only objects are supported.
+A `z.union()` field renders using its first non-literal, non-`undefined`, non-`null` member (falling back to the first member if every option is a placeholder). Validation still runs against the whole union — only which component gets picked for rendering is affected. The canonical case is an optional email modeled as a union, so an explicit empty string is a valid value alongside a real email:
 
 ```ts
 const formSchema = z.object({
-  guestListName: z.string(),
-  invitedGuests: z
-    .array(
-      // Define the fields for each item
-      z.object({
-        name: z.string(),
-        age: z.number(),
-      })
-    )
-    // Optionally set a custom label - otherwise this will be inferred from the field name
-    .describe('Guests invited to the party'),
+  email: z.union([z.literal(''), z.string().email().optional()]),
 })
 ```
 
-Arrays are not supported as the root element of the form schema.
+::component-preview{path=/registry/examples/AutoFormUnion.vue}
+::
 
-You also can set default value of an array using .default(), but please make sure the array element has same structure with the schema.
+### Readonly fields
+
+Fields marked `.readonly()` are skipped entirely and never rendered — use this for values you want present on the inferred type (e.g. an `id` returned by your API) without exposing an editable control for them.
 
 ```ts
 const formSchema = z.object({
-  guestListName: z.string(),
-  invitedGuests: z
-    .array(
-      // Define the fields for each item
-      z.object({
-        name: z.string(),
-        age: z.number(),
-      })
-    )
-    .describe('Guests invited to the party')
-    .default([
-      { name: 'John', age: 24, },
-      { name: 'Jane', age: 20, },
-    ]),
+  id: z.string().readonly(),
+  name: z.string(),
 })
 ```
 
@@ -210,89 +163,67 @@ As zod doesn't allow adding other properties to the schema, you can use the `fie
 
 You can use the `label` property to customize label if you want to overwrite the pre-defined label via [Zod's description](#descriptions).
 
-```vue
-<template>
-  <AutoForm
-    :field-config="{
-      username: {
-        label: 'Custom username',
-      },
-    }"
-  />
-</template>
+```ts
+const fieldConfig = {
+  username: {
+    label: 'Custom username',
+  },
+}
 ```
 
 ### Description
 
 You can use the `description` property to add a description below the field.
 
-```vue
-<template>
-  <AutoForm
-    :field-config="{
-      username: {
-        description: 'Enter a unique username. This will be shown to other users.',
-      },
-    }"
-  />
-</template>
+```ts
+const fieldConfig = {
+  username: {
+    description: 'Enter a unique username. This will be shown to other users.',
+  },
+}
+```
+
+### hideLabel
+
+Use `hideLabel` to hide the field's `FormLabel` entirely.
+
+```ts
+const fieldConfig = {
+  username: {
+    hideLabel: true,
+  },
+}
 ```
 
 ### Input props
 
 You can use the `inputProps` property to pass props to the input component. You can use any props that the HTML component accepts.
 
-```vue
-<template>
-  <AutoForm
-    :field-config="{
-      username: {
-        inputProps: {
-          type: 'text',
-          placeholder: 'Username',
-        },
-      },
-    }"
-  />
-</template>
+```ts
+const fieldConfig = {
+  username: {
+    inputProps: {
+      type: 'text',
+      placeholder: 'Username',
+    },
+  },
+}
 
 // This will be rendered as:
-<input type="text" placeholder="Username" />
-```
-
-Disabling the label of an input can be done by using the `showLabel` property in `inputProps`.
-
-```vue
-<template>
-  <AutoForm
-    :field-config="{
-      username: {
-        inputProps: {
-          type: 'text',
-          placeholder: 'Username',
-          showLabel: false,
-        },
-      },
-    }"
-  />
-</template>
+// <input type="text" placeholder="Username" />
 ```
 
 ### Component
 
 By default, AutoForm will use the Zod type to determine which input component to use. You can override this by using the `component` property.
 
-```vue
-<template>
-  <AutoForm
-    :field-config="{
-      acceptTerms: {
-        // Booleans use a checkbox by default, use a switch instead
-        component: 'switch',
-      },
-    }"
-  />
-</template>
+```ts
+const fieldConfig = {
+  acceptTerms: {
+    // Booleans use a checkbox by default, use a switch instead
+    component: 'switch',
+  },
+}
 ```
 
 The complete list of supported field types is typed. Current supported types are:
@@ -303,54 +234,111 @@ The complete list of supported field types is typed. Current supported types are
 - `select` (default for enums)
 - `radio`
 - `textarea`
+- `tags` — for a `z.array(z.string())` field, renders a tags input instead of the default accordion
+- `pin` — for a `z.string()` field, renders a segmented one-time-code input. It always renders 6 slots unless you override the count via `inputProps.maxlength` — the schema's own `.length()` check is not read for this.
 
-Alternatively, you can pass a Vue component to the `component` property to use a custom component.
+::component-preview{path=/registry/examples/AutoFormTags.vue}
+::
 
-In `CustomField.vue`
+::component-preview{path=/registry/examples/AutoFormPin.vue}
+::
+
+Alternatively, you can pass a Vue component to the `component` property to use a custom component. The contract: `AutoFormField.vue` mounts your component in place of the built-in field and binds exactly the `FieldProps` shape — `fieldName`, `label`, `required`, `options`, `disabled`, and `config` (the same `ConfigItem`, so your component can read `config.inputProps`, `config.description`, etc. itself). It receives no other props.
+
+To match the built-in fields' label/description/validation-message skeleton, wrap your control in `AutoFormFieldWrapper` (exported from `@/registry/ui/auto-form`), which owns that skeleton and exposes the `vee-validate` `FormField` slot props (`componentField`, etc.) through its default slot.
 
 ```vue
 <script setup lang="ts">
-import type { FieldProps } from './interface'
-import { AutoFormLabel } from '@/ui/auto-form'
-import { FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/ui/form'
-import { Input } from '@/ui/input'
-import { computed } from 'vue'
-import AutoFormLabel from './AutoFormLabel.vue'
+import type { FieldProps } from '@/registry/ui/auto-form'
+import { AutoFormFieldWrapper } from '@/registry/ui/auto-form'
 
 const props = defineProps<FieldProps>()
 </script>
 
 <template>
-  <FormField v-slot="slotProps" :name="fieldName">
-    <FormItem v-bind="$attrs">
-      <AutoFormLabel v-if="!config?.hideLabel" :required="required">
-        {{ config?.label }}
-      </AutoFormLabel>
-      <FormControl>
-        <CustomInput v-bind="slotProps" />
-      </FormControl>
-      <FormDescription v-if="config?.description">
-        {{ config.description }}
-      </FormDescription>
-      <FormMessage />
-    </FormItem>
-  </FormField>
+  <AutoFormFieldWrapper v-bind="props">
+    <template #default="slotProps">
+      <input type="text" v-bind="slotProps.componentField">
+    </template>
+  </AutoFormFieldWrapper>
 </template>
 ```
 
 Pass the above component in `fieldConfig`.
 
-```vue
-<template>
-  <AutoForm
-    :field-config="{
-      username: {
-        component: CustomField,
-      },
-    }"
-  />
-</template>
+```ts
+const fieldConfig = {
+  username: {
+    component: CustomField,
+  },
+}
 ```
+
+::component-preview{path=/registry/examples/AutoFormCustomComponent.vue}
+::
+
+### Icon
+
+Use `icon` to render an icon inside `AutoFormFieldInput`'s control (the `string`/`textarea` field). It's a no-op for every other field component.
+
+```ts
+const fieldConfig = {
+  email: {
+    icon: { component: MailIcon },
+  },
+  query: {
+    icon: { component: SearchIcon, position: 'right' },
+  },
+}
+```
+
+`position` accepts `'left'` (default) or `'right'`.
+
+::component-preview{path=/registry/examples/AutoFormInputIcon.vue}
+::
+
+### Options
+
+By default, an enum's select/radio options are derived straight from the schema — each string doubles as both the submitted value and its beautified display label. Use `options` to pass explicit value/label pairs instead: each option's `label` is displayed, and its `value` is what gets submitted.
+
+```ts
+const fieldConfig = {
+  plan: {
+    options: [
+      { value: 'free', label: 'Free' },
+      { value: 'pro', label: 'Pro ($10/mo)' },
+    ],
+  },
+}
+```
+
+This is a rendering-only concern — your zod enum/union must still validate against the `value`s listed here; keeping the two in sync is up to you.
+
+::component-preview{path=/registry/examples/AutoFormValueLabelOptions.vue}
+::
+
+### checkedValue, uncheckedValue, indeterminateValue
+
+These only apply to the `checkbox` variant of a boolean field — the `switch` variant is always a plain boolean and ignores all three.
+
+- `checkedValue` / `uncheckedValue` — the value submitted when the checkbox is checked / unchecked. Default to plain `true` / `false`.
+- `indeterminateValue` — when set, the checkbox becomes a tri-state control that cycles `checkedValue -> uncheckedValue -> indeterminateValue -> checkedValue -> ...` on each click, using reka-ui's indeterminate visual state.
+
+```ts
+const fieldConfig = {
+  taskStatus: {
+    component: 'checkbox',
+    checkedValue: 'done',
+    uncheckedValue: 'todo',
+    indeterminateValue: 'partial',
+  },
+}
+```
+
+Your zod schema is responsible for validating that the field may actually hold `indeterminateValue`, e.g. `z.union([z.literal('done'), z.literal('todo'), z.literal('partial')])`.
+
+::component-preview{path=/registry/examples/AutoFormIndeterminate.vue}
+::
 
 ### Named slot
 
@@ -381,7 +369,7 @@ You can use Vue named slot to customize the rendered `AutoFormField`.
 
 There are two ways to access the form data:
 
-### @submit
+#### @submit
 
 The preferred way is to use the `submit` emit. This will be called when the form is submitted and the data is valid.
 
@@ -395,13 +383,13 @@ The preferred way is to use the `submit` emit. This will be called when the form
 </template>
 ```
 
-### Controlled form
+#### Controlled form
 
 By passing the `form` as props, you can control and use the method provided by `Form`.
 
 ```vue
 <script setup lang="ts">
-import { AutoForm } from '@/components/ui/auto-form'
+import { AutoForm } from '@/registry/ui/auto-form'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import * as z from 'zod'
@@ -460,7 +448,7 @@ All children passed to the `AutoForm` component will be rendered below the form.
 </template>
 ```
 
-### Dependencies
+## Dependencies
 
 AutoForm allows you to add dependencies between fields to control fields based on the value of other fields. For this, a `dependencies` array can be passed to the `AutoForm` component.
 
@@ -490,19 +478,115 @@ AutoForm allows you to add dependencies between fields to control fields based o
 </template>
 ```
 
+`DependencyType` and the `Dependency` type are exported from `auto-form/interface`.
+
 The following dependency types are supported:
 
 - `DependencyType.HIDES`: Hides the target field when the `when` function returns true
 - `DependencyType.DISABLES`: Disables the target field when the `when` function returns true
-- `DependencyType.REQUIRES`: Sets the target field to required when the `when` function returns true
+- `DependencyType.REQUIRES`: Marks the target field as required when the `when` function returns true — and, since it now layers onto form validation, blocks submission if the target is left empty while the dependency is active (see below)
 - `DependencyType.SETS_OPTIONS`: Sets the options of the target field to the `options` array when the `when` function returns true
 
 The `when` function is called with the value of the source field and the value of the target field and should return a boolean to indicate if the dependency should be applied.
 
-Please note that dependencies will not cause the inverse action when returning `false` - for example, if you mark a field as required in your zod schema (i.e. by not explicitly setting `optional`), returning `false` in your `REQURIES` dependency will not mark it as optional. You should instead use zod's `optional` method to mark as optional by default and use the `REQURIES` dependency to mark it as required when the dependency is met.
+Please note that dependencies will not cause the inverse action when returning `false` - for example, if you mark a field as required in your zod schema (i.e. by not explicitly setting `optional`), returning `false` in your `REQUIRES` dependency will not mark it as optional. You should instead use zod's `optional` method to mark as optional by default and use the `REQUIRES` dependency to mark it as required when the dependency is met.
 
-Please note that dependencies do not have any effect on the validation of the form. You should use zod's `refine` method to validate the form based on the value of other fields.
+`HIDES`, `DISABLES`, and `SETS_OPTIONS` have no effect on form validation — use zod's `refine` method if you need cross-field validation for those. `REQUIRES` is the one exception: an active `REQUIRES` dependency is enforced at submit time, not just shown as a cosmetic asterisk on the label — submitting with the target field empty blocks submission and renders a validation message, exactly as if the field were required in the schema itself.
 
 You can create multiple dependencies for the same field and dependency type - for example to hide a field based on multiple other fields. This will then hide the field when any of the dependencies are met.
 
-## Example
+::component-preview{path=/registry/examples/AutoFormDependencies.vue}
+::
+
+## Sub-objects & arrays
+
+You can nest objects to create accordion sections.
+
+```ts
+const formSchema = z.object({
+  address: z.object({
+    street: z.string(),
+    city: z.string(),
+    zip: z.string(),
+
+    // You can nest objects as deep as you want
+    nested: z.object({
+      foo: z.string(),
+      bar: z.string(),
+
+      nested: z.object({
+        foo: z.string(),
+        bar: z.string(),
+      }),
+    }),
+  }),
+})
+```
+
+Like with normal objects, you can use the `describe` method to set a label and description for the section:
+
+```ts
+const formSchemaWithLabel = z.object({
+  address: z
+    .object({
+      street: z.string(),
+      city: z.string(),
+      zip: z.string(),
+    })
+    .describe('Your address'),
+})
+```
+
+A nested object's accordion label and description also honor `fieldConfig`'s `label`/`description` for that key — `fieldConfig.address.label` takes priority over the schema's own `.describe()`, which in turn takes priority over the beautified field name.
+
+```ts
+const fieldConfig = {
+  address: {
+    label: 'Shipping address',
+    description: 'Where should we send your order?',
+  },
+}
+```
+
+AutoForm supports arrays _of objects_. Because inferring things like field labels from arrays of strings/numbers/etc. is difficult, only objects are supported by the accordion + add/remove UI (arrays of plain strings can instead use the [`tags` component](#component)).
+
+```ts
+const formSchemaWithArray = z.object({
+  guestListName: z.string(),
+  invitedGuests: z
+    .array(
+      // Define the fields for each item
+      z.object({
+        name: z.string(),
+        age: z.number(),
+      }),
+    )
+    // Optionally set a custom label - otherwise this will be inferred from the field name
+    .describe('Guests invited to the party'),
+})
+```
+
+Arrays are not supported as the root element of the form schema.
+
+You also can set default value of an array using .default(), but please make sure the array element has same structure with the schema.
+
+```ts
+const formSchemaWithArrayDefault = z.object({
+  guestListName: z.string(),
+  invitedGuests: z
+    .array(
+      z.object({
+        name: z.string(),
+        age: z.number(),
+      }),
+    )
+    .describe('Guests invited to the party')
+    .default([
+      { name: 'John', age: 24 },
+      { name: 'Jane', age: 20 },
+    ]),
+})
+```
+
+::component-preview{path=/registry/examples/AutoFormObjectArray.vue}
+::
