@@ -45,7 +45,15 @@ function toDateValue(value: unknown): DateValue | undefined {
   return undefined
 }
 
-/** Converts a `DateValue` (or already-a-`Date`) back to a plain JS `Date` for the form model. */
+/**
+ * Converts a `DateValue` (or already-a-`Date`) back to a plain JS `Date` for
+ * the form model. Accepts the same string forms as `toDateValue` — the two
+ * must agree on what counts as a renderable value, since the Calendar reads
+ * through `toDateValue` while the trigger label reads through this. When
+ * only `toDateValue` handled strings, a string-valued model rendered the
+ * "Pick a date" placeholder on the button while the Calendar inside showed
+ * the correct date.
+ */
 function toJsDate(value: unknown): Date | undefined {
   if (value === null || value === undefined || value === '')
     return undefined
@@ -53,6 +61,8 @@ function toJsDate(value: unknown): Date | undefined {
     return value.toDate(getLocalTimeZone())
   if (value instanceof Date)
     return value
+  if (typeof value === 'string')
+    return toDateValue(value)?.toDate(getLocalTimeZone())
   return undefined
 }
 </script>
