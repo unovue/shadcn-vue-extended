@@ -34,8 +34,11 @@
      that use this sit on --well, where 0.556 only reaches 4.34:1. */
   --ink-3: oklch(0.54 0 0);
 
-  --accent-ink: #157e53;
-  --accent-soft: #e6f4ed;
+  /* Same hue as --primary, stepped darker. The primary itself is only 2.46:1
+     on white, so it cannot carry text on a light surface. */
+  --accent-ink: oklch(0.52 0.14 162.48);
+  /* Pale enough that --accent-ink on it still clears 4.5:1 for badge text. */
+  --accent-soft: oklch(0.97 0.022 162.48);
   --moss: #3d7a4e;
   --flag: #c0442f;
 
@@ -59,8 +62,9 @@
   --ink-2: oklch(0.8 0 0);
   --ink-3: oklch(0.708 0 0); /* --muted-foreground */
 
-  --accent-ink: #5fd0a0;
-  --accent-soft: #5fd0a021;
+  /* On dark surfaces the primary reads directly: 7.27:1 on --panel. */
+  --accent-ink: oklch(0.696 0.17 162.48);
+  --accent-soft: oklch(0.696 0.17 162.48 / 14%);
   --moss: #5bd79c;
   --flag: #f5897f;
 

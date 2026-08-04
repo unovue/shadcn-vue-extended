@@ -30,7 +30,7 @@ function handleCopy() {
         material surface, so a preview looks exactly like the component will in
         the project that installs it.
       -->
-      <div class="rounded-[12px] border border-border bg-background p-4">
+      <div class="rounded-[12px] border border-muted bg-background p-4">
         <TabsContent value="preview" class="min-h-60 flex items-center justify-center">
           <Suspense>
             <component :is="componentName" />
