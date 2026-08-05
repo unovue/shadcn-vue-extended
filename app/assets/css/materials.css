@@ -25,6 +25,12 @@
   --well: oklch(0.97 0 0); /* --muted    */
   --sub: oklch(0.985 0 0); /* --sidebar  */
 
+  /* The stage a component demo sits on. Deliberately a third value, distinct
+     from both the bezel and the panel, so a preview reads as its own surface.
+     It cannot go darker than this in light mode: shadcn's --muted-foreground,
+     which the demos use for field descriptions, falls under 4.5:1 past 0.985. */
+  --preview: oklch(0.985 0 0);
+
   --hairline: oklch(0.922 0 0); /* --border */
   --hairline-strong: oklch(0.87 0 0);
 
@@ -54,6 +60,10 @@
   --well: oklch(0.269 0 0); /* --muted      */
   --sub: oklch(0.18 0 0);
 
+  /* A step above the panel rather than below it — in dark, a raised stage
+     separates from its surroundings better than a recessed one. */
+  --preview: oklch(0.269 0 0);
+
   --hairline: oklch(1 0 0 / 12%); /* ~ --border */
   --hairline-strong: oklch(1 0 0 / 24%);
 
@@ -78,6 +88,7 @@
   --color-panel: var(--panel);
   --color-well: var(--well);
   --color-sub: var(--sub);
+  --color-preview: var(--preview);
 
   --color-hairline: var(--hairline);
   --color-hairline-strong: var(--hairline-strong);
