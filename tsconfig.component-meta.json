@@ -1,0 +1,29 @@
+{
+  // Standalone project used by `transformers/auto-type-table.ts` to extract prop
+  // tables via `vue-component-meta`. It deliberately does not depend on the
+  // generated `.nuxt/tsconfig.*.json` files, which do not exist yet on a cold
+  // start (content is parsed before Nuxt writes its templates).
+  "compilerOptions": {
+    "target": "ESNext",
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "~": ["./app"],
+      "~/*": ["./app/*"],
+      "@": ["./app"],
+      "@/*": ["./app/*"],
+      "~~": ["."],
+      "~~/*": ["./*"],
+      "@@": ["."],
+      "@@/*": ["./*"]
+    },
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["app/**/*", "registry/**/*"]
+}

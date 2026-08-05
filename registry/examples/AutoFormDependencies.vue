@@ -2,12 +2,12 @@
 // NOTE: `DependencyType` and `Dependency` are exported from `interface.ts`
 // but are not re-exported through the `index.ts` barrel, so they're
 // imported directly from the interface module here.
-import type { Dependency } from '@/registry/ui/auto-form/interface'
+import type { Dependency } from '~~/registry/ui/auto-form/interface'
 import { Button } from '@/components/ui/button'
-import { AutoForm } from '@/registry/ui/auto-form'
-import { DependencyType } from '@/registry/ui/auto-form/interface'
 import { ref } from 'vue'
 import { z } from 'zod'
+import { AutoForm } from '~~/registry/ui/auto-form'
+import { DependencyType } from '~~/registry/ui/auto-form/interface'
 
 const formSchema = z.object({
   age: z.number().min(0).default(20),

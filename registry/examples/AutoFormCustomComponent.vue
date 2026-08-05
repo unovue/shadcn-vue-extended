@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { AutoForm, AutoFormFieldWrapper } from '@/registry/ui/auto-form'
 import { StarIcon } from '@lucide/vue'
 import { defineComponent, h, ref } from 'vue'
 import { z } from 'zod'
+import { AutoForm, AutoFormFieldWrapper } from '~~/registry/ui/auto-form'
 
 // A custom field component built on `AutoFormFieldWrapper` (the shared
 // label/description/message skeleton). It's mounted in place of the

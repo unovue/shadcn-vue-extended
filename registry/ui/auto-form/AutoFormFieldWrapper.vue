@@ -33,7 +33,13 @@ const resolvedLabel = computed(() => props.config?.label || beautifyObjectName(p
 <template>
   <FormField v-slot="slotProps" :name="fieldName">
     <FormItem>
-      <div v-if="layout === 'inline'" class="space-y-0 mb-3 flex items-center gap-3">
+      <!--
+        No bottom margin: FormItem is a `grid gap-2`, so the gap already
+        separates this row from the description and message below. An extra
+        margin here made checkbox/switch fields sit looser than every other
+        field type.
+      -->
+      <div v-if="layout === 'inline'" class="flex items-center gap-3">
         <FormControl>
           <slot v-bind="slotProps" />
         </FormControl>

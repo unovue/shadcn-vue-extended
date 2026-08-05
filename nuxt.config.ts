@@ -29,6 +29,16 @@ export default defineNuxtConfig({
       standalone: false,
     },
   },
+  typescript: {
+    // `registry/` and `scripts/` live outside `app/`, so Nuxt 4's split
+    // tsconfigs don't pick them up by default.
+    tsConfig: {
+      include: ['../registry/**/*'],
+    },
+    nodeTsConfig: {
+      include: ['../scripts/**/*', '../transformers/**/*'],
+    },
+  },
   components: {
     dirs: [
       {
@@ -40,7 +50,7 @@ export default defineNuxtConfig({
       },
       '~/components',
       {
-        path: '~/registry/examples',
+        path: '~~/registry/examples',
         pathPrefix: false,
         isAsync: true,
         global: true,
@@ -66,6 +76,14 @@ export default defineNuxtConfig({
   icon: {
     // Render icon as svg to accommodate the class selector used by shadcn
     mode: 'svg',
+    // Bundle the icons we actually use so they resolve synchronously. Without
+    // this, SSR falls back to fetching them over HTTP, which @nuxt/icon 2.4.1
+    // cannot do under Nitro 2.13 (it calls `$fetch.native`, which the
+    // per-request server `$fetch` does not expose) — every icon then renders
+    // empty on the server.
+    clientBundle: {
+      scan: true,
+    },
   },
   shadcn: {
     prefix: '',
