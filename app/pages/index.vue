@@ -18,7 +18,13 @@ const contributors = computed(() => {
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 px-6 sm:px-12">
+  <!--
+    No `min-h-0` here on purpose. The automatic minimum size lets this grow past
+    the viewport once the credits push it over, so the scroller handles it. With
+    `min-h-0` it would stay viewport-height and `my-auto` would centre the taller
+    content on a negative offset, putting the top of the page out of reach.
+  -->
+  <div class="flex flex-1 px-6 sm:px-12">
     <div class="mx-auto my-auto w-full max-w-[900px] py-10 sm:py-24">
       <h1 class="mt-8 max-w-[18ch] text-balance text-[clamp(26px,7.6vw,32px)] font-medium leading-[1.08] tracking-[-0.04em] text-ink sm:mt-16 sm:text-[clamp(32px,5.6vw,52px)]">
         A community registry for shadcn-vue.

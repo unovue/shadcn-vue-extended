@@ -13,8 +13,8 @@ const mainNav = [
       The bezel: the frame the app sits in. It owns the viewport, so the
       document itself never scrolls — panels scroll internally instead.
     -->
-    <div class="flex h-dvh flex-1 p-3 sm:h-auto sm:min-h-screen sm:p-5">
-      <div class="mat-panel flex min-h-0 flex-1 flex-col overflow-hidden rounded-[16px]">
+    <div class="fixed inset-0 flex p-3 sm:p-5">
+      <div class="mat-panel border flex min-h-0 flex-1 flex-col overflow-hidden rounded-[16px]">
         <header class="flex h-12 shrink-0 items-center gap-4 border-b border-hairline px-4 sm:px-5">
           <NuxtLink to="/" class="text-[13px]">
             <Wordmark />
@@ -47,7 +47,10 @@ const mainNav = [
           <ThemeToggle />
         </header>
 
-        <main class="no-bar flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
+        <!-- `scroll-inset`, not `no-bar`: this is the page's only scroller, so
+             its scrollbar needs to be visible — just held clear of the panel's
+             rounded corners. -->
+        <main class="scroll-inset flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
           <slot />
         </main>
       </div>

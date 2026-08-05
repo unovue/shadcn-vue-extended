@@ -45,7 +45,7 @@ watch(() => route.path, () => {
       </aside>
 
       <div class="min-w-0 flex-1">
-        <div class="mat-panel scroll-inset h-full overflow-y-auto overflow-x-hidden overscroll-contain rounded-[16px]">
+        <div class="mat-panel border scroll-inset h-full overflow-y-auto overflow-x-hidden overscroll-contain rounded-[16px]">
           <header class="sticky top-0 z-20 flex h-12 items-center gap-2.5 border-b border-hairline bg-panel/85 px-4 backdrop-blur-md sm:gap-4 sm:px-5">
             <NuxtLink to="/" class="text-[13px] lg:hidden">
               <Wordmark />
