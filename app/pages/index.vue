@@ -20,9 +20,8 @@ const contributors = computed(() => {
 <template>
   <div class="flex min-h-0 flex-1 px-6 sm:px-12">
     <div class="mx-auto my-auto w-full max-w-[900px] py-10 sm:py-24">
-      <h1 class="mt-8 max-w-[24ch] text-balance text-[clamp(26px,7.6vw,32px)] font-medium leading-[1.08] tracking-[-0.04em] text-ink sm:mt-16 sm:text-[clamp(32px,5.6vw,52px)]">
-        The shadcn-vue pieces nobody ships,
-        <span class="whitespace-nowrap">contributed by</span> the people who needed them.
+      <h1 class="mt-8 max-w-[18ch] text-balance text-[clamp(26px,7.6vw,32px)] font-medium leading-[1.08] tracking-[-0.04em] text-ink sm:mt-16 sm:text-[clamp(32px,5.6vw,52px)]">
+        A community registry for shadcn-vue.
       </h1>
 
       <div class="mt-6 grid max-w-[46ch] gap-3 text-[13.5px] leading-[1.7] text-ink-2 sm:mt-9 sm:gap-4 sm:text-[15px]">
