@@ -4,7 +4,8 @@
   "title": "Separator Label",
   "description": "A separator with a centered label.",
   "dependencies": [
-    "reka-ui"
+    "reka-ui",
+    "@vueuse/core"
   ],
   "files": [
     {

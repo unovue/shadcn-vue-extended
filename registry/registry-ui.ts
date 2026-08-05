@@ -4,7 +4,8 @@ export const ui = [
     type: 'registry:ui',
     title: 'Separator Label',
     description: 'A separator with a centered label.',
-    dependencies: ['reka-ui'],
+    // SeparatorLabel.vue uses reactiveOmit from @vueuse/core.
+    dependencies: ['reka-ui', '@vueuse/core'],
     files: [
       {
         path: 'ui/separator-label/index.ts',
@@ -30,6 +31,9 @@ export const ui = [
       // undeclared and only resolved by accident via a registryDependency that
       // happened to pull an icon package in.
       '@lucide/vue',
+      // AutoFormFieldDate.vue imports DateFormatter/parseDate/etc. directly. The
+      // `calendar` registryDependency does not declare it, so it must be listed here.
+      '@internationalized/date',
     ],
     registryDependencies: [
       'form',

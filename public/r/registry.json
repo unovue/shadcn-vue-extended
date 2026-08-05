@@ -1,4 +1,5 @@
 {
+  "$schema": "https://shadcn-vue.com/schema/registry.json",
   "name": "shadcn-vue-extended",
   "homepage": "https://extended.shadcn-vue.com",
   "items": [
@@ -8,7 +9,8 @@
       "title": "Separator Label",
       "description": "A separator with a centered label.",
       "dependencies": [
-        "reka-ui"
+        "reka-ui",
+        "@vueuse/core"
       ],
       "files": [
         {
@@ -31,7 +33,8 @@
         "@vee-validate/zod",
         "zod",
         "reka-ui",
-        "@lucide/vue"
+        "@lucide/vue",
+        "@internationalized/date"
       ],
       "registryDependencies": [
         "form",

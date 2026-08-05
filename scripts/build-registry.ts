@@ -14,6 +14,7 @@ const registry = [
 async function buildRegistryJsonFile() {
   // 1. Fix the path for registry items.
   const fixedRegistry = {
+    $schema: 'https://shadcn-vue.com/schema/registry.json',
     name: 'shadcn-vue-extended',
     homepage: 'https://extended.shadcn-vue.com',
     items: registry.map((item) => {
