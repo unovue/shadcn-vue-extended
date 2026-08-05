@@ -160,7 +160,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-bezel text-ink overscroll-none font-sans antialiased;
+    @apply text-ink overscroll-none font-sans antialiased;
     text-rendering: optimizelegibility;
   }
 }

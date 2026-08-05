@@ -30,7 +30,7 @@ function handleCopy() {
         the bezel behind the panel and the panel the docs sit on, so a demo
         reads as a separate thing rather than dissolving into the page.
       -->
-      <div class="rounded-[12px] border border-muted bg-preview p-8">
+      <div class="rounded-[12px] border bg-preview p-8">
         <TabsContent value="preview" class="min-h-60 flex items-center justify-center">
           <Suspense>
             <component :is="componentName" />

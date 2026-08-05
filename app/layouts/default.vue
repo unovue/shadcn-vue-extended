@@ -13,7 +13,7 @@ const mainNav = [
       The bezel: the frame the app sits in. It owns the viewport, so the
       document itself never scrolls — panels scroll internally instead.
     -->
-    <div class="fixed inset-0 flex p-3 sm:p-5">
+    <div class="bg-bezel fixed inset-0 flex p-3 sm:p-5">
       <div class="mat-panel border flex min-h-0 flex-1 flex-col overflow-hidden rounded-[16px]">
         <header class="flex h-12 shrink-0 items-center gap-4 border-b border-hairline px-4 sm:px-5">
           <NuxtLink to="/" class="text-[13px]">

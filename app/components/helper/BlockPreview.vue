@@ -10,7 +10,7 @@ const isLoading = ref(true)
 </script>
 
 <template>
-  <div class="relative bg-background aspect-[4/2.5] h-[var(--height)]">
+  <div class="relative bg-preview aspect-[4/2.5] h-[var(--height)]">
     <div v-if="isLoading" class="flex items-center justify-center h-full w-full z-10 relative">
       <Icon name="lucide:loader-circle" class="animate-spin" />
     </div>
@@ -19,7 +19,7 @@ const isLoading = ref(true)
         <iframe
           v-show="!isLoading"
           :src="url"
-          class="relative z-20 w-full bg-background size-full"
+          class="relative z-20 w-full bg-preview size-full"
           @load="isLoading = false"
         />
       </ClientOnly>

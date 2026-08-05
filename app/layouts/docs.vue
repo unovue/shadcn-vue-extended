@@ -14,7 +14,7 @@ watch(() => route.path, () => {
 <template>
   <TooltipProvider>
     <!-- The bezel owns the viewport; the sidebar and the panel float on it. -->
-    <div class="fixed inset-0 flex gap-3 overflow-hidden p-3 sm:gap-4 sm:p-5">
+    <div class="bg-bezel fixed inset-0 flex gap-3 overflow-hidden p-3 sm:gap-4 sm:p-5">
       <aside class="hidden h-full w-[236px] shrink-0 lg:block">
         <nav class="flex h-full flex-col px-2">
           <div class="shrink-0 pb-2.5">
