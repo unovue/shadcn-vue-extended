@@ -145,7 +145,7 @@
       "files": [
         {
           "path": "registry/ui/timeslot/utilities.css",
-          "type": "registry:style"
+          "type": "registry:ui"
         },
         {
           "path": "registry/ui/timeslot/index.ts",
@@ -179,7 +179,10 @@
           "path": "registry/ui/timeslot/TimeslotSegmentItemText.vue",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "css": {
+        "@import \"@/components/ui/timeslot/utilities.css\"": {}
+      }
     },
     {
       "name": "dialog-01",

@@ -12,7 +12,7 @@
     {
       "path": "registry/ui/timeslot/utilities.css",
       "content": "@utility timeslot-horizontal {\n  &[data-timeslot-root] {\n    @apply flex-col;\n\n    & [data-timeslot-segment] {\n      @apply timeslot-segment-horizontal;\n    }\n  }\n}\n\n@utility timeslot-segment-horizontal {\n  &[data-timeslot-segment] {\n    &:before {\n      @apply w-px h-full top-0 bottom-0 left-[50%] right-[50%];\n      --mask-start: bottom;\n      --mask-end: top;\n    }\n\n    & [data-timeslot-scroll-area-viewport] {\n      @apply flex-row snap-x;\n    }\n\n    & [data-timeslot-segment-item] {\n      @apply timeslot-segment-item-horizontal;\n    }\n  }\n}\n\n@utility timeslot-segment-item-horizontal {\n  &[data-timeslot-segment-item] {\n    @apply flex-row;\n\n    &:first-child, &:last-child {\n      @apply min-w-[calc(50%+2rem)]!;\n    }\n\n    &:first-child:last-child {\n      @apply w-full min-h-auto!;\n    }\n\n    & > button {\n      @apply mx-0 my-1 min-w-14 min-h-20;\n    }\n\n    &[data-day-period]:before {\n      @apply my-0 ml-4;\n    }\n  }\n}\n",
-      "type": "registry:style"
+      "type": "registry:ui"
     },
     {
       "path": "registry/ui/timeslot/index.ts",
@@ -55,5 +55,8 @@
       "type": "registry:ui"
     }
   ],
+  "css": {
+    "@import \"@/components/ui/timeslot/utilities.css\"": {}
+  },
   "type": "registry:ui"
 }

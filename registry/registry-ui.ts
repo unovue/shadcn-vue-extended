@@ -140,7 +140,7 @@ export const ui = [
     files: [
       {
         path: 'ui/timeslot/utilities.css',
-        type: 'registry:style',
+        type: 'registry:ui',
       },
       {
         path: 'ui/timeslot/index.ts',
@@ -175,5 +175,8 @@ export const ui = [
         type: 'registry:ui',
       },
     ],
+    css: {
+      '@import "@/components/ui/timeslot/utilities.css"': {},
+    },
   },
 ]
