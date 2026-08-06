@@ -131,5 +131,49 @@ export const ui = [
       },
     ],
   },
-
+  {
+    name: 'timeslot',
+    type: 'registry:ui',
+    title: 'Timeslot',
+    description: 'A component for picking time from a restricted set of timeslots.',
+    dependencies: ['reka-ui', '@vueuse/core', '@internationalized/date'],
+    files: [
+      {
+        path: 'ui/timeslot/utilities.css',
+        type: 'registry:style',
+      },
+      {
+        path: 'ui/timeslot/index.ts',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/timeslot/Timeslot.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/timeslot/TimeslotHours.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/timeslot/TimeslotRoot.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/timeslot/TimeslotScrollArea.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/timeslot/TimeslotSegment.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/timeslot/TimeslotSegmentItem.vue',
+        type: 'registry:ui',
+      },
+      {
+        path: 'ui/timeslot/TimeslotSegmentItemText.vue',
+        type: 'registry:ui',
+      },
+    ],
+  },
 ]

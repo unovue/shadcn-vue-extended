@@ -1,0 +1,49 @@
+@utility timeslot-horizontal {
+  &[data-timeslot-root] {
+    @apply flex-col;
+
+    & [data-timeslot-segment] {
+      @apply timeslot-segment-horizontal;
+    }
+  }
+}
+
+@utility timeslot-segment-horizontal {
+  &[data-timeslot-segment] {
+    &:before {
+      @apply w-px h-full top-0 bottom-0 left-[50%] right-[50%];
+      --mask-start: bottom;
+      --mask-end: top;
+    }
+
+    & [data-timeslot-scroll-area-viewport] {
+      @apply flex-row snap-x;
+    }
+
+    & [data-timeslot-segment-item] {
+      @apply timeslot-segment-item-horizontal;
+    }
+  }
+}
+
+@utility timeslot-segment-item-horizontal {
+  &[data-timeslot-segment-item] {
+    @apply flex-row;
+
+    &:first-child, &:last-child {
+      @apply min-w-[calc(50%+2rem)]!;
+    }
+
+    &:first-child:last-child {
+      @apply w-full min-h-auto!;
+    }
+
+    & > button {
+      @apply mx-0 my-1 min-w-14 min-h-20;
+    }
+
+    &[data-day-period]:before {
+      @apply my-0 ml-4;
+    }
+  }
+}
