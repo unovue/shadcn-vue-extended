@@ -1,13 +1,11 @@
-<script lang="ts">
+<script setup lang="ts">
 import type { SegmentPart, TimeValue } from 'reka-ui'
 import type { HourCycle } from './TimeslotHours.vue'
 import type { TimeslotRootModelValue, TimeslotRootProps, TimeslotRootSegments } from './TimeslotRoot.vue'
-</script>
-
-<script setup lang="ts">
 import { cn } from '@/lib/utils'
 import { Time } from '@internationalized/date'
 import { reactiveOmit } from '@vueuse/core'
+import { computed } from 'vue'
 import TimeslotHours from './TimeslotHours.vue'
 import TimeslotRoot from './TimeslotRoot.vue'
 

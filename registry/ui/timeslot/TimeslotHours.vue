@@ -1,9 +1,7 @@
-<script lang="ts">
+<script setup lang="ts" generic = "T extends number">
 import type { TimeslotSegmentEmits, TimeslotSegmentProps } from './TimeslotSegment.vue'
-</script>
-
-<script setup lang="ts" generic="T extends number">
 import { useForwardPropsEmits } from 'reka-ui'
+import { computed } from 'vue'
 import TimeslotSegment from './TimeslotSegment.vue'
 import TimeslotSegmentItem from './TimeslotSegmentItem.vue'
 import TimeslotSegmentItemText from './TimeslotSegmentItemText.vue'

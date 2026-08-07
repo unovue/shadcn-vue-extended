@@ -1,12 +1,10 @@
-<script lang="ts">
+<script setup lang="ts" generic="T extends number">
 import type { PrimitiveProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
-</script>
-
-<script setup lang="ts" generic="T extends number">
+import { cn } from '@/lib/utils'
 import { reactivePick } from '@vueuse/core'
 import { Primitive, useForwardProps } from 'reka-ui'
-import { cn } from '~/lib/utils'
+import { useTemplateRef } from 'vue'
 import TimeslotSegmentItemText from './TimeslotSegmentItemText.vue'
 
 export interface TimeslotSegmentItemProps<T extends number> extends PrimitiveProps {

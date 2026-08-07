@@ -1,11 +1,9 @@
-<script lang="ts">
+<script setup lang="ts" generic = "TSegmentPart extends string">
 import type { HTMLAttributes } from 'vue'
 import type { TimeslotSegmentProps } from './TimeslotSegment.vue'
-</script>
-
-<script setup lang="ts" generic="TSegmentPart extends string">
+import { cn } from '@/lib/utils'
 import { Primitive } from 'reka-ui'
-import { cn } from '~/lib/utils'
+import { computed, shallowReactive, watch } from 'vue'
 import TimeslotSegment from './TimeslotSegment.vue'
 
 export type TimeslotItemMatcher<TSegmentPart extends string> = {

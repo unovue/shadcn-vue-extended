@@ -1,14 +1,12 @@
-<script lang="ts">
-import type { PrimitiveProps } from 'reka-ui'
-import type { TimeslotSegmentItemProps } from './TimeslotSegmentItem.vue'
-</script>
-
 <script setup lang="ts" generic="T extends number">
 import type { MaybeElement } from '@vueuse/core'
-import type { HTMLAttributes } from 'vue'
+import type { PrimitiveProps } from 'reka-ui'
+import type { ComputedRef, HTMLAttributes, Ref } from 'vue'
+import type { TimeslotSegmentItemProps } from './TimeslotSegmentItem.vue'
+import { cn } from '@/lib/utils'
 import { useIntersectionObserver, useTemplateRefsList } from '@vueuse/core'
 import { Primitive } from 'reka-ui'
-import { cn } from '~/lib/utils'
+import { computed, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import TimeslotScrollArea from './TimeslotScrollArea.vue'
 import TimeslotSegmentItem from './TimeslotSegmentItem.vue'
 

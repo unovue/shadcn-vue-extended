@@ -1,11 +1,9 @@
-<script lang="ts">
+<script setup lang="ts">
 import type { PrimitiveProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
-</script>
-
-<script setup lang="ts">
+import { cn } from '@/lib/utils'
 import { Primitive } from 'reka-ui'
-import { cn } from '~/lib/utils'
+import { computed } from 'vue'
 
 export interface TimeslotSegmentItemTextProps extends PrimitiveProps {
   class?: HTMLAttributes['class']

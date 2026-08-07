@@ -1,9 +1,7 @@
-<script lang="ts">
+<script setup lang="ts">
 import type { ScrollAreaRootProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
-</script>
-
-<script setup lang="ts">
+import { cn } from '@/lib/utils'
 import { reactiveOmit } from '@vueuse/core'
 import {
   ScrollAreaCorner,
@@ -11,7 +9,7 @@ import {
   ScrollAreaScrollbar,
   ScrollAreaViewport,
 } from 'reka-ui'
-import { cn } from '~/lib/utils'
+import { ref, useTemplateRef, watch } from 'vue'
 
 export interface TimeslotScrollAreaProps extends ScrollAreaRootProps {
   class?: HTMLAttributes['class']
