@@ -51,7 +51,7 @@ function onButtonClick() {
   >
     <Primitive
       as="button"
-      role="button"
+      type="button"
       class="snap snap-center snap-normal text-center font-normal cursor-pointer transition-[color,opacity] text-muted-foreground hover:text-foreground data-[selected=true]:text-foreground data-[readonly=true]:opacity-25 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-3 rounded-md outline-none"
       :data-selected="props.selected"
       :data-readonly="props.readonly"
