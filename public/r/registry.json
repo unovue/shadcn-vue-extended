@@ -133,6 +133,58 @@
       ]
     },
     {
+      "name": "timeslot",
+      "type": "registry:ui",
+      "title": "Timeslot",
+      "description": "A component for picking time from a restricted set of timeslots.",
+      "dependencies": [
+        "reka-ui",
+        "@vueuse/core",
+        "@internationalized/date"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/timeslot/utilities.css",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/timeslot/index.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/timeslot/Timeslot.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/timeslot/TimeslotHours.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/timeslot/TimeslotRoot.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/timeslot/TimeslotScrollArea.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/timeslot/TimeslotSegment.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/timeslot/TimeslotSegmentItem.vue",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/timeslot/TimeslotSegmentItemText.vue",
+          "type": "registry:ui"
+        }
+      ],
+      "css": {
+        "@import \"@/components/ui/timeslot/utilities.css\"": {}
+      }
+    },
+    {
       "name": "dialog-01",
       "type": "registry:block",
       "title": "Dialog 01",

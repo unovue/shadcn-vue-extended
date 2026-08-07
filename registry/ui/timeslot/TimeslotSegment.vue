@@ -1,0 +1,204 @@
+<script setup lang="ts" generic="T extends number">
+import type { MaybeElement } from '@vueuse/core'
+import type { PrimitiveProps } from 'reka-ui'
+import type { ComputedRef, HTMLAttributes, Ref } from 'vue'
+import type { TimeslotSegmentItemProps } from './TimeslotSegmentItem.vue'
+import { cn } from '@/lib/utils'
+import { useIntersectionObserver, useTemplateRefsList } from '@vueuse/core'
+import { Primitive } from 'reka-ui'
+import { computed, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import TimeslotScrollArea from './TimeslotScrollArea.vue'
+import TimeslotSegmentItem from './TimeslotSegmentItem.vue'
+
+export interface TimeslotSegmentProps<T extends number> extends PrimitiveProps {
+  class?: HTMLAttributes['class']
+  options?: readonly T[]
+  isReadonlyItem?: (value: T) => boolean
+}
+
+export interface TimeslotSegmentEmits<T extends number> {
+  (event: 'change', value: T | undefined): void
+}
+
+export interface TimeslotSegmentItemSlotProps<T extends number> extends TimeslotSegmentItemProps<T> {
+  ref?: (el: object | null) => void
+  onSelect: (target: HTMLElement) => void
+}
+
+const props = withDefaults(defineProps<TimeslotSegmentProps<T>>(), {
+  options: () => [],
+  orientation: 'vertical',
+})
+
+const emit = defineEmits<TimeslotSegmentEmits<T>>()
+
+const scrollArea = useTemplateRef('scroll-area')
+const elements = useTemplateRefsList<HTMLElement>()
+
+const model = defineModel<T | undefined>()
+const selectedOption = ref<T | undefined>()
+watch(selectedOption, (selectedOption) => {
+  model.value = selectedOption
+})
+
+const commonSegmentItemOptions = {
+  ref: el => elements.value?.set(el),
+  onSelect: target => onItemClick(target),
+} satisfies Pick<TimeslotSegmentItemSlotProps<T>, 'ref' | 'onSelect'>
+
+const segmentItems: ComputedRef<TimeslotSegmentItemSlotProps<T>[]> = computed(() => {
+  const uniqueOptions = new Set(props.options)
+  const selectedValue = selectedOption.value
+
+  return [...uniqueOptions].toSorted((a, b) => a - b).map((value) => {
+    return {
+      ...commonSegmentItemOptions,
+      value,
+      readonly: isReadonlyItem(value),
+      selected: selectedValue === value,
+    }
+  })
+})
+
+// onBeforeMount(() => {
+//   // TODO: scroll int initial position
+// })
+
+const isScrolling = ref(false)
+
+watch([isScrolling, selectedOption], ([isScrolling, selectedOption]) => {
+  if (!isScrolling && void 0 !== selectedOption) {
+    emit('change', selectedOption)
+  }
+})
+
+const intersectedElement = useIntersectedElement(elements)
+
+const selectedEntry = computed(() => {
+  const el = intersectedElement.value
+
+  if (el instanceof HTMLElement) {
+    return el.dataset.value
+  }
+
+  return void 0
+})
+
+function onItemClick(target: HTMLElement) {
+  scrollArea.value?.scrollToElement(target)
+}
+
+function isReadonlyItem(value: T) {
+  return props.isReadonlyItem
+    ? props.isReadonlyItem(value)
+    : false
+}
+
+watch([selectedEntry, segmentItems], ([selectedEntry, segmentItems]) => {
+  if (undefined === selectedEntry)
+    return
+
+  const segmentItem = segmentItems.find(({ value }) => {
+    return `${value}` === selectedEntry
+  })
+
+  selectedOption.value = segmentItem?.value
+})
+
+function useIntersectedElement(elements: Ref<MaybeElement[]>) {
+  const el = shallowRef<Element>()
+  const root = computed(() => scrollArea.value?.$el)
+
+  function onIntersectionChange(entries: IntersectionObserverEntry[]) {
+    const intersectingEntry = entries.filter((entry) => {
+      return entry.isIntersecting
+    }).reduce((entry, other) => {
+      if (!entry)
+        return other
+      return entry.time < other.time
+        ? other
+        : entry
+    }, void 0 as IntersectionObserverEntry | undefined)
+    el.value = intersectingEntry?.target
+  }
+
+  useIntersectionObserver(
+    elements,
+    onIntersectionChange,
+    {
+      root,
+      rootMargin: '-50% '.repeat(4),
+      threshold: 0,
+    },
+  )
+
+  return el
+}
+</script>
+
+<template>
+  <Primitive
+    data-timeslot-segment
+    :as="props.as"
+    :as-child="props.asChild"
+    :class="cn(
+      'relative max-w-full max-h-full',
+      props.class,
+    )"
+  >
+    <TimeslotScrollArea
+      ref="scroll-area"
+      class="size-full max-w-full max-h-full"
+      @scrolling="value => isScrolling = value"
+    >
+      <template
+        v-for="item in segmentItems"
+        :key="item.value"
+      >
+        <slot
+          v-bind="{ item }"
+        >
+          <TimeslotSegmentItem
+            v-bind="item"
+          />
+        </slot>
+      </template>
+
+      <TimeslotSegmentItem
+        v-if="!segmentItems.length"
+        v-bind="commonSegmentItemOptions"
+        :value="-1"
+        readonly
+      >
+        <span>--</span>
+      </TimeslotSegmentItem>
+    </TimeslotScrollArea>
+  </Primitive>
+</template>
+
+<style scoped>
+@reference "tailwindcss";
+
+@layer components {
+  [data-timeslot-segment] {
+    &:before {
+      @apply content-[''] block absolute w-full h-px top-[50%] bottom-[50%] left-0 right-0;
+      background-color: var(--border);
+
+      --mask-start: left;
+      --mask-end: right;
+      --mask-size: calc(var(--spacing) * 2);
+
+      mask-image: linear-gradient(
+        to var(--mask-start),
+        black var(--mask-size),
+        transparent var(--mask-size)
+      ), linear-gradient(
+        to var(--mask-end),
+        black var(--mask-size),
+        transparent var(--mask-size)
+      );
+    }
+  }
+}
+</style>

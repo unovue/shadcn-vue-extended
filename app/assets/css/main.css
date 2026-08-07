@@ -231,3 +231,5 @@ html.light {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+@import "../../../registry/ui/timeslot/utilities.css";
